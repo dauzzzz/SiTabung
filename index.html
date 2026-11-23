@@ -1064,6 +1064,7 @@
     const IS_PREVIEW = false; // Ubah menjadi false SAAT DEPLOY agar mode preview & data dummy hilang dan terhubung 100% ke Supabase
     const SUPABASE_URL = "https://oohzibxlgujgldwozyby.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_aMth-oupHS1vhLBUZS62Dg_XnmMGQNi";
+
     // Inisialisasi client Supabase hanya saat produksi (IS_PREVIEW === false)
     const supabase = !IS_PREVIEW ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -1760,7 +1761,10 @@
             </select>
             <span class="badge badge-green">💡 Klik sel tanggal mana pun untuk isi / edit langsung</span>
           </div>
-          <div style="display:flex; gap:8px;">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="btn-tpl-bulanan" class="btn btn-outline btn-sm">📄 Template</button>
+            <button id="btn-upload-bulanan" class="btn btn-primary btn-sm">📤 Upload Excel</button>
+            <input type="file" id="bulanan-excel-input" accept=".xlsx,.xls,.csv" style="display:none;" />
             <button id="btn-export-bulanan" class="btn btn-soft btn-sm">📥 Export Excel</button>
             <button id="btn-print-bulanan" class="btn btn-outline btn-sm">🖨️ Cetak / PDF</button>
           </div>
@@ -1826,6 +1830,15 @@
       document.getElementById('bulanan-month-select').onchange = (e) => {
         state.selectedMonthIdx = Number(e.target.value);
         renderBulanan(container);
+      };
+      document.getElementById('btn-tpl-bulanan').onclick = () => {
+        downloadTemplateTabunganBulanan(kls, tp, bObj, year, siswaList);
+      };
+      document.getElementById('btn-upload-bulanan').onclick = () => {
+        document.getElementById('bulanan-excel-input').click();
+      };
+      document.getElementById('bulanan-excel-input').onchange = (e) => {
+        handleUploadExcelBulananDirect(e, tp, bObj, year, siswaList);
       };
       document.getElementById('btn-print-bulanan').onclick = () => window.print();
       document.getElementById('btn-export-bulanan').onclick = () => {
@@ -2130,6 +2143,7 @@
                     }).join('')}
                   </select>
                   <button type="button" class="btn btn-soft btn-sm" id="btn-tpl-tx-bulanan">📄 Template 1–31</button>
+                  <button type="button" class="btn btn-primary btn-sm" id="btn-up-tx-bulanan">📤 Upload</button>
                 </div>
               </div>
 
@@ -2141,7 +2155,10 @@
                 <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px; line-height:1.5;">
                   Cocok jika Anda sudah punya total tabungan anak per bulan (kolom Juli s.d. Juni) dalam 1 sheet Excel.
                 </p>
-                <button type="button" class="btn btn-soft btn-sm" id="btn-tpl-tx-rekap">📄 Template Rekap Jul–Jun</button>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-soft btn-sm" id="btn-tpl-tx-rekap">📄 Template Rekap Jul–Jun</button>
+                  <button type="button" class="btn btn-primary btn-sm" id="btn-up-tx-rekap">📤 Upload</button>
+                </div>
               </div>
             </div>
 
@@ -2221,6 +2238,14 @@
         };
         document.getElementById('btn-tpl-tx-bulanan').onclick = () => downloadTemplateTabunganBulanan(kls, tp, bSel, yearSel, siswaList);
         document.getElementById('btn-tpl-tx-rekap').onclick = () => downloadTemplateTabunganRekap(kls, tp, siswaList);
+        document.getElementById('btn-up-tx-bulanan').onclick = () => {
+          state.importMode = 'bulanan';
+          document.getElementById('tx-excel-input').click();
+        };
+        document.getElementById('btn-up-tx-rekap').onclick = () => {
+          state.importMode = 'rekap_perbulan';
+          document.getElementById('tx-excel-input').click();
+        };
         document.getElementById('btn-pick-tx-excel').onclick = () => document.getElementById('tx-excel-input').click();
         document.getElementById('tx-excel-input').onchange = (e) => handleParseExcelTabungan(e, tp, siswaList, container);
 
@@ -3184,34 +3209,8 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Mengimpor...'; }
 
       try {
-        const nameToId = new Map(getSiswaAktifKelas().map(s => [s.nama_lengkap.trim().toUpperCase(), s.id]));
-
-        if (draft.newStudents.length) {
-          const insertedSiswa = await dbInsert('siswa', draft.newStudents);
-          (insertedSiswa || []).forEach(s => {
-            nameToId.set(s.nama_lengkap.trim().toUpperCase(), s.id);
-          });
-        }
-
-        const txRows = [];
-        draft.entries.forEach(it => {
-          const sid = it.siswa_id || nameToId.get(it.nama_lengkap);
-          if (!sid) return;
-          txRows.push({
-            siswa_id: sid,
-            kelas_id: state.activeKelasId,
-            tanggal: it.tanggal,
-            jenis: it.jenis,
-            nominal: it.nominal,
-            keterangan: it.keterangan
-          });
-        });
-
-        if (!txRows.length) throw new Error('Tidak ada transaksi valid yang bisa disimpan.');
-
-        await dbInsert('transaksi_tabungan', txRows);
+        await saveImportDraftToDb(draft);
         state.importDraft = null;
-        showToast(`Berhasil mengimpor ${txRows.length} transaksi tabungan!`);
         await loadAllData();
       } catch (err) {
         console.error(err);
@@ -3220,42 +3219,191 @@
       }
     }
 
-    async function handleImportExcelSiswa(e) {
+    async function saveImportDraftToDb(draft) {
+      const nameToId = new Map(getSiswaAktifKelas().map(s => [s.nama_lengkap.trim().toUpperCase(), s.id]));
+
+      if (draft.newStudents.length) {
+        const insertedSiswa = await dbInsert('siswa', draft.newStudents);
+        (insertedSiswa || []).forEach(s => {
+          nameToId.set(s.nama_lengkap.trim().toUpperCase(), s.id);
+        });
+      }
+
+      const txRows = [];
+      draft.entries.forEach(it => {
+        const sid = it.siswa_id || nameToId.get(it.nama_lengkap);
+        if (!sid) return;
+        txRows.push({
+          siswa_id: sid,
+          kelas_id: state.activeKelasId,
+          tanggal: it.tanggal,
+          jenis: it.jenis,
+          nominal: it.nominal,
+          keterangan: it.keterangan
+        });
+      });
+
+      if (!txRows.length) throw new Error('Tidak ada transaksi valid yang bisa disimpan.');
+
+      await dbInsert('transaksi_tabungan', txRows);
+      showToast(`Berhasil mengimpor ${txRows.length} transaksi tabungan!`);
+    }
+
+    async function handleUploadExcelBulananDirect(e, tp, bObj, year, siswaList) {
       const file = e.target.files?.[0];
       e.target.value = '';
       if (!file || typeof XLSX === 'undefined') return;
+
       try {
         const buf = await file.arrayBuffer();
         const wb = XLSX.read(buf, { type: 'array' });
         const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        const existingNames = new Set(getSiswaAktifKelas().map(s => s.nama_lengkap.toUpperCase()));
-        const toInsert = [];
-        let urut = getSiswaAktifKelas().length + 1;
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
 
-        for (const r of rows) {
-          const maybeNo = Number(r[0]);
-          const maybeName = String(r[1] || r[0] || '').trim();
-          if (!maybeName || maybeName.length < 3) continue;
-          if (/^(no|nama|rekap|bulan|catatan|kelas|jumlah)/i.test(maybeName)) continue;
-          const upper = maybeName.toUpperCase();
-          if (existingNames.has(upper)) continue;
-          existingNames.add(upper);
-          toInsert.push({
-            kelas_id: state.activeKelasId,
-            no_urut: !isNaN(maybeNo) && maybeNo > 0 ? maybeNo : urut++,
-            nama_lengkap: upper,
-            aktif: true
+        const existingMap = new Map(siswaList.map(s => [s.nama_lengkap.trim().toUpperCase(), s]));
+        const daysInMonth = new Date(year, bObj.month, 0).getDate();
+        const ymPrefix = `${year}-${String(bObj.month).padStart(2, '0')}`;
+
+        let headerRowIdx = -1;
+        let dayColMap = {};
+        let nameColIdx = 1;
+
+        for (let r = 0; r < Math.min(rows.length, 15); r++) {
+          const row = rows[r];
+          let foundDays = 0;
+          const tempMap = {};
+          row.forEach((cell, cIdx) => {
+            const n = Number(String(cell).trim());
+            if (Number.isInteger(n) && n >= 1 && n <= 31 && tempMap[n] === undefined) {
+              tempMap[n] = cIdx;
+              foundDays++;
+            }
+            if (/^nama/i.test(String(cell).trim())) nameColIdx = cIdx;
           });
+          if (foundDays >= 7) {
+            headerRowIdx = r;
+            dayColMap = tempMap;
+            break;
+          }
         }
-        if (!toInsert.length) {
-          showToast('Tidak ditemukan nama siswa baru di file Excel tersebut', true);
+
+        if (headerRowIdx < 0) {
+          showToast('Format kolom tanggal 1–31 tidak ditemukan. Gunakan tombol "Template" terlebih dahulu.', true);
           return;
         }
-        await dbInsert('siswa', toInsert);
-        showToast(`${toInsert.length} siswa berhasil diimpor dari Excel!`);
-        await loadAllData();
+
+        const entries = [];
+        const newStudentMap = new Map();
+        let nextUrut = siswaList.length + 1;
+
+        for (let r = headerRowIdx + 1; r < rows.length; r++) {
+          const row = rows[r];
+          const rawName = String(row[nameColIdx] || '').trim();
+          if (!rawName || rawName.length < 2) continue;
+          if (/^(total|jumlah|rekap|bulan|no\b|nama\b|petunjuk)/i.test(rawName)) continue;
+
+          const upper = rawName.toUpperCase();
+          const existing = existingMap.get(upper);
+
+          if (!existing && !newStudentMap.has(upper)) {
+            const noVal = Number(row[0]);
+            newStudentMap.set(upper, {
+              kelas_id: state.activeKelasId,
+              no_urut: Number.isInteger(noVal) && noVal > 0 ? noVal : nextUrut++,
+              nama_lengkap: upper,
+              aktif: true
+            });
+          }
+
+          for (let d = 1; d <= daysInMonth; d++) {
+            const cIdx = dayColMap[d];
+            if (cIdx === undefined) continue;
+            const val = parseNominalCell(row[cIdx]);
+            if (val === 0) continue;
+            entries.push({
+              nama_lengkap: upper,
+              siswa_id: existing ? existing.id : null,
+              isNewStudent: !existing,
+              tanggal: `${ymPrefix}-${String(d).padStart(2, '0')}`,
+              jenis: val < 0 ? 'tarik' : 'setor',
+              nominal: Math.abs(val),
+              keterangan: `Impor Excel (${bObj.name} ${year})`
+            });
+          }
+        }
+
+        if (!entries.length) {
+          showToast('Tidak ada nominal tabungan yang terbaca di file Excel tersebut.', true);
+          return;
+        }
+
+        const totalNominal = entries.reduce((acc, it) => acc + (it.jenis === 'tarik' ? -it.nominal : it.nominal), 0);
+        const draft = {
+          fileName: file.name,
+          newStudents: Array.from(newStudentMap.values()),
+          entries,
+          totalNominal
+        };
+
+        openModal({
+          title: `Pratinjau Upload — ${bObj.name} ${year}`,
+          wide: true,
+          bodyHtml: `
+            <div style="margin-bottom:12px; font-size:13px; color:var(--text-muted);">
+              File: <strong>${escapeHtml(draft.fileName)}</strong><br/>
+              <strong>${draft.entries.length}</strong> transaksi terbaca •
+              <strong>${draft.newStudents.length}</strong> siswa baru •
+              Total: <strong style="color:var(--leaf-700);">${fmtRp(draft.totalNominal)}</strong>
+            </div>
+            <div class="table-wrap" style="max-height:46vh; overflow-y:auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nama Siswa</th>
+                    <th>Status</th>
+                    <th>Tanggal</th>
+                    <th>Jenis</th>
+                    <th style="text-align:right;">Nominal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${draft.entries.slice(0, 60).map(it => `
+                    <tr>
+                      <td style="font-weight:700;">${escapeHtml(it.nama_lengkap)}</td>
+                      <td>${it.isNewStudent ? '<span class="badge badge-green">Siswa Baru</span>' : '<span class="badge badge-gray">Terdaftar</span>'}</td>
+                      <td>${it.tanggal}</td>
+                      <td><span class="badge ${it.jenis === 'tarik' ? 'badge-red' : 'badge-green'}">${it.jenis === 'tarik' ? 'Penarikan' : 'Setoran'}</span></td>
+                      <td style="text-align:right; font-weight:700;">${fmtRp(it.nominal)}</td>
+                    </tr>
+                  `).join('')}
+                  ${draft.entries.length > 60 ? `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); font-size:12px;">... dan ${draft.entries.length - 60} transaksi lainnya</td></tr>` : ''}
+                </tbody>
+              </table>
+            </div>
+          `,
+          footHtml: `
+            <button type="button" class="btn btn-outline" id="bul-imp-cancel">Batal</button>
+            <button type="button" class="btn btn-primary" id="bul-imp-save">✅ Simpan &amp; Impor Sekarang</button>
+          `
+        });
+
+        document.getElementById('bul-imp-cancel').onclick = closeModal;
+        document.getElementById('bul-imp-save').onclick = async () => {
+          const btn = document.getElementById('bul-imp-save');
+          btn.disabled = true;
+          btn.textContent = 'Mengimpor...';
+          try {
+            await saveImportDraftToDb(draft);
+            closeModal();
+            await loadAllData();
+          } catch (err) {
+            showToast('Gagal menyimpan impor: ' + (err.message || err), true);
+            btn.disabled = false;
+            btn.textContent = '✅ Simpan & Impor Sekarang';
+          }
+        };
       } catch (err) {
+        console.error(err);
         showToast('Gagal membaca file Excel: ' + err.message, true);
       }
     }
