@@ -1061,7 +1061,7 @@
     // =====================================================================
     // KONFIGURASI APLIKASI (SAKLAR DEPLOYMENT)
     // =====================================================================
-    const IS_PREVIEW = false; // Ubah menjadi false SAAT DEPLOY agar mode preview & data dummy hilang dan terhubung 100% ke Supabase
+    const IS_PREVIEW = true; // Ubah menjadi false SAAT DEPLOY agar mode preview & data dummy hilang dan terhubung 100% ke Supabase
     const SUPABASE_URL = "https://oohzibxlgujgldwozyby.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_aMth-oupHS1vhLBUZS62Dg_XnmMGQNi";
 
@@ -1328,6 +1328,39 @@
         return;
       }
       const { error } = await supabase.from(table).delete().eq('id', id);
+      if (error) throw error;
+    }
+
+    async function dbDeleteTxByDate(kelasId, isoDate) {
+      if (IS_PREVIEW) {
+        previewStore.transaksi_tabungan = previewStore.transaksi_tabungan.filter(
+          t => !(t.kelas_id === kelasId && t.tanggal === isoDate)
+        );
+        return;
+      }
+      const { error } = await supabase
+        .from('transaksi_tabungan')
+        .delete()
+        .eq('kelas_id', kelasId)
+        .eq('tanggal', isoDate);
+      if (error) throw error;
+    }
+
+    async function dbDeleteTxByMonth(kelasId, ymPrefix, daysInMonth) {
+      if (IS_PREVIEW) {
+        previewStore.transaksi_tabungan = previewStore.transaksi_tabungan.filter(
+          t => !(t.kelas_id === kelasId && (t.tanggal || '').startsWith(ymPrefix))
+        );
+        return;
+      }
+      const startDate = `${ymPrefix}-01`;
+      const endDate = `${ymPrefix}-${String(daysInMonth).padStart(2, '0')}`;
+      const { error } = await supabase
+        .from('transaksi_tabungan')
+        .delete()
+        .eq('kelas_id', kelasId)
+        .gte('tanggal', startDate)
+        .lte('tanggal', endDate);
       if (error) throw error;
     }
 
@@ -1767,6 +1800,8 @@
             <input type="file" id="bulanan-excel-input" accept=".xlsx,.xls,.csv" style="display:none;" />
             <button id="btn-export-bulanan" class="btn btn-soft btn-sm">📥 Export Excel</button>
             <button id="btn-print-bulanan" class="btn btn-outline btn-sm">🖨️ Cetak / PDF</button>
+            <button id="btn-del-hari-bulanan" class="btn btn-danger btn-sm">🗑️ Hapus 1 Hari</button>
+            <button id="btn-del-bulan-bulanan" class="btn btn-danger btn-sm">🗑️ Hapus 1 Bulan</button>
           </div>
         </div>
 
@@ -1788,7 +1823,11 @@
                   <tr>
                     <th class="sticky-no">NO</th>
                     <th class="sticky-name">NAMA SISWA</th>
-                    ${Array.from({ length: daysInMonth }, (_, i) => `<th>${i + 1}</th>`).join('')}
+                    ${Array.from({ length: daysInMonth }, (_, i) => {
+                      const d = i + 1;
+                      const hasData = dayTotals[d] !== 0;
+                      return `<th data-header-day="${d}" style="${hasData ? 'cursor:pointer;' : ''}" title="${hasData ? `Klik untuk hapus semua isian tanggal ${d} ${bObj.name} ${year}` : `Tanggal ${d}`}">${d}</th>`;
+                    }).join('')}
                     <th>JUMLAH</th>
                   </tr>
                 </thead>
@@ -1844,6 +1883,91 @@
       document.getElementById('btn-export-bulanan').onclick = () => {
         exportBulananExcel(kls, tp, bObj, year, daysInMonth, siswaList, cellMap);
       };
+
+      // Hapus semua isian 1 hari (semua siswa di tanggal tertentu)
+      const confirmDeleteOneDay = (dayNum) => {
+        const dayStr = String(dayNum).padStart(2, '0');
+        const isoDate = `${ymPrefix}-${dayStr}`;
+        const txHari = txBulan.filter(t => t.tanggal === isoDate);
+        if (!txHari.length) {
+          showToast(`Tidak ada catatan tabungan pada tanggal ${dayNum} ${bObj.name} ${year}.`, true);
+          return;
+        }
+        const totalHari = txHari.reduce((a, t) => a + signedNominal(t), 0);
+        openConfirmModal(
+          `Hapus Semua Isian Tanggal ${dayNum} ${bObj.name} ${year}?`,
+          `Sebanyak ${txHari.length} transaksi dari seluruh siswa pada tanggal ${dayNum} ${bObj.name} ${year} (Total: ${fmtRp(totalHari)}) akan dihapus permanen.`,
+          async () => {
+            await dbDeleteTxByDate(state.activeKelasId, isoDate);
+            showToast(`Semua isian tanggal ${dayNum} ${bObj.name} ${year} berhasil dihapus.`);
+            await loadAllData();
+          },
+          'Ya, Hapus 1 Hari'
+        );
+      };
+
+      document.getElementById('btn-del-hari-bulanan').onclick = () => {
+        const filledDays = [];
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dayStr = String(d).padStart(2, '0');
+          const iso = `${ymPrefix}-${dayStr}`;
+          const cnt = txBulan.filter(t => t.tanggal === iso).length;
+          if (cnt > 0) filledDays.push({ day: d, count: cnt, total: dayTotals[d] });
+        }
+        if (!filledDays.length) {
+          showToast(`Belum ada isian tabungan pada bulan ${bObj.name} ${year}.`, true);
+          return;
+        }
+        openModal({
+          title: `Hapus Isian 1 Hari — ${bObj.name} ${year}`,
+          bodyHtml: `
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;">
+              Pilih tanggal yang ingin dikosongkan untuk <strong>seluruh siswa</strong> di kelas <strong>${escapeHtml(kls.nama_kelas)}</strong>:
+            </p>
+            <div class="form-group" style="margin-top:0;">
+              <label class="field-label">Pilih Tanggal</label>
+              <select id="del-day-select" class="select">
+                ${filledDays.map(fd => `<option value="${fd.day}">Tanggal ${fd.day} ${bObj.name} ${year} (${fd.count} transaksi • ${fmtRp(fd.total)})</option>`).join('')}
+              </select>
+            </div>
+          `,
+          footHtml: `
+            <button type="button" class="btn btn-outline" id="del-day-cancel">Batal</button>
+            <button type="button" class="btn btn-danger" id="del-day-next">Hapus Tanggal Ini</button>
+          `
+        });
+        document.getElementById('del-day-cancel').onclick = closeModal;
+        document.getElementById('del-day-next').onclick = () => {
+          const chosenDay = Number(document.getElementById('del-day-select').value);
+          confirmDeleteOneDay(chosenDay);
+        };
+      };
+
+      // Hapus semua isian 1 bulan penuh
+      document.getElementById('btn-del-bulan-bulanan').onclick = () => {
+        if (!txBulan.length) {
+          showToast(`Belum ada isian tabungan pada bulan ${bObj.name} ${year}.`, true);
+          return;
+        }
+        openConfirmModal(
+          `Hapus Semua Isian Bulan ${bObj.name} ${year}?`,
+          `PERINGATAN: Sebanyak ${txBulan.length} transaksi seluruh siswa di kelas ${kls.nama_kelas} pada bulan ${bObj.name} ${year} (Total: ${fmtRp(grandTotal)}) akan dihapus permanen dan tidak bisa dikembalikan.`,
+          async () => {
+            await dbDeleteTxByMonth(state.activeKelasId, ymPrefix, daysInMonth);
+            showToast(`Seluruh isian bulan ${bObj.name} ${year} berhasil dihapus.`);
+            await loadAllData();
+          },
+          'Ya, Hapus 1 Bulan'
+        );
+      };
+
+      // Klik header tanggal (1-31) untuk hapus cepat 1 hari
+      container.querySelectorAll('[data-header-day]').forEach(th => {
+        th.onclick = () => {
+          const d = Number(th.dataset.headerDay);
+          if (dayTotals[d] !== 0) confirmDeleteOneDay(d);
+        };
+      });
 
       // Klik sel matriks -> langsung buka modal edit/tambah untuk siswa & tanggal tersebut
       container.querySelectorAll('.matrix-cell').forEach(td => {
@@ -2184,8 +2308,10 @@
                   <div>
                     <div style="font-size:14px; font-weight:800; color:var(--leaf-900);">Pratinjau Data Siap Impor (${escapeHtml(draft.fileName)})</div>
                     <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">
-                      <strong>${draft.entries.length}</strong> transaksi terbaca •
-                      <strong>${draft.newStudents.length}</strong> siswa baru akan ditambahkan •
+                      <strong>${draft.countNew}</strong> baru •
+                      <strong>${draft.countUpdate}</strong> diperbarui •
+                      <strong>${draft.countSkip}</strong> sudah ada (dilewati) •
+                      <strong>${draft.newStudents.length}</strong> siswa baru •
                       Total Nominal: <strong style="color:var(--leaf-700);">${fmtRp(draft.totalNominal)}</strong>
                     </div>
                   </div>
@@ -2199,7 +2325,7 @@
                     <thead>
                       <tr>
                         <th>Nama Siswa</th>
-                        <th>Status Siswa</th>
+                        <th>Status Impor</th>
                         <th>Tanggal</th>
                         <th>Jenis</th>
                         <th style="text-align:right;">Nominal</th>
@@ -2209,7 +2335,7 @@
                       ${draft.entries.slice(0, 60).map(it => `
                         <tr>
                           <td style="font-weight:700;">${escapeHtml(it.nama_lengkap)}</td>
-                          <td>${it.isNewStudent ? '<span class="badge badge-green">Siswa Baru</span>' : '<span class="badge badge-gray">Terdaftar</span>'}</td>
+                          <td>${it.syncStatus === 'skip' ? '<span class="badge badge-gray">Sudah Ada (Dilewati)</span>' : (it.syncStatus === 'update' ? '<span class="badge" style="background:var(--warning-bg);color:var(--warning);">Diperbarui</span>' : (it.isNewStudent ? '<span class="badge badge-green">Baru (+Siswa)</span>' : '<span class="badge badge-green">Baru</span>'))}</td>
                           <td>${it.tanggal}</td>
                           <td><span class="badge ${it.jenis === 'tarik' ? 'badge-red' : 'badge-green'}">${it.jenis === 'tarik' ? 'Penarikan' : 'Setoran'}</span></td>
                           <td style="text-align:right; font-weight:700;">${fmtRp(it.nominal)}</td>
@@ -2949,6 +3075,68 @@
     // =====================================================================
     // EXCEL IMPORT & EXPORT (SheetJS)
     // =====================================================================
+    async function handleImportExcelSiswa(e) {
+      const file = e.target.files?.[0];
+      e.target.value = '';
+      if (!file || typeof XLSX === 'undefined') return;
+      if (!state.activeKelasId) {
+        showToast('Pilih atau buat kelas terlebih dahulu.', true);
+        return;
+      }
+
+      try {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+        const existingSet = new Set(
+          getSiswaAktifKelas().map(s => s.nama_lengkap.trim().toUpperCase())
+        );
+        let nextUrut = getSiswaAktifKelas().length + 1;
+        const toInsert = [];
+
+        rows.forEach((row) => {
+          if (!row || !row.length) return;
+          let noVal = null;
+          let rawName = '';
+
+          if (row.length >= 2 && String(row[1] || '').trim()) {
+            noVal = Number(row[0]);
+            rawName = String(row[1]).trim();
+          } else {
+            rawName = String(row[0] || '').trim();
+          }
+
+          if (!rawName || rawName.length < 2) return;
+          if (/^(no\b|nama\b|daftar\b|rekap\b|kelas\b|bulan\b|total\b|jumlah\b|petunjuk)/i.test(rawName)) return;
+
+          const upper = rawName.toUpperCase();
+          if (existingSet.has(upper)) return;
+          existingSet.add(upper);
+
+          toInsert.push({
+            kelas_id: state.activeKelasId,
+            no_urut: Number.isInteger(noVal) && noVal > 0 ? noVal : nextUrut++,
+            nama_lengkap: upper,
+            aktif: true
+          });
+        });
+
+        if (!toInsert.length) {
+          showToast('Tidak ada nama siswa baru yang terbaca dari file Excel.', true);
+          return;
+        }
+
+        await dbInsert('siswa', toInsert);
+        showToast(`Berhasil mengimpor ${toInsert.length} siswa baru!`);
+        await loadAllData();
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal mengimpor Excel siswa: ' + (err.message || err), true);
+      }
+    }
+
     function downloadTemplateSiswaExcel(kls) {
       if (typeof XLSX === 'undefined') { showToast('Library Excel belum siap', true); return; }
       const data = [
@@ -3019,6 +3207,48 @@
       const cleaned = String(raw).replace(/rp/gi, '').replace(/\./g, '').replace(/,/g, '').trim();
       const num = Number(cleaned);
       return isNaN(num) ? 0 : Math.round(num);
+    }
+
+    function annotateImportEntries(entries) {
+      const existingByKey = new Map();
+      getTxAktifKelas().forEach(tx => {
+        const key = `${tx.siswa_id}|${tx.tanggal}`;
+        if (!existingByKey.has(key)) existingByKey.set(key, []);
+        existingByKey.get(key).push(tx);
+      });
+
+      // Cegah duplikasi internal jika ada baris siswa + tanggal yang sama di dalam 1 file Excel
+      const dedupMap = new Map();
+      entries.forEach(it => {
+        dedupMap.set(`${it.nama_lengkap}|${it.tanggal}`, it);
+      });
+      const uniqueEntries = Array.from(dedupMap.values());
+
+      let countNew = 0;
+      let countUpdate = 0;
+      let countSkip = 0;
+
+      const annotated = uniqueEntries.map(it => {
+        if (!it.siswa_id) {
+          countNew++;
+          return { ...it, syncStatus: 'baru' };
+        }
+        const matches = existingByKey.get(`${it.siswa_id}|${it.tanggal}`) || [];
+        if (!matches.length) {
+          countNew++;
+          return { ...it, syncStatus: 'baru' };
+        }
+        const existingNet = matches.reduce((a, t) => a + signedNominal(t), 0);
+        const incomingNet = it.jenis === 'tarik' ? -Math.abs(it.nominal) : Math.abs(it.nominal);
+        if (existingNet === incomingNet) {
+          countSkip++;
+          return { ...it, syncStatus: 'skip' };
+        }
+        countUpdate++;
+        return { ...it, syncStatus: 'update' };
+      });
+
+      return { annotated, countNew, countUpdate, countSkip };
     }
 
     async function handleParseExcelTabungan(e, tp, siswaList, container) {
@@ -3188,11 +3418,15 @@
           return;
         }
 
-        const totalNominal = entries.reduce((acc, it) => acc + (it.jenis === 'tarik' ? -it.nominal : it.nominal), 0);
+        const { annotated, countNew, countUpdate, countSkip } = annotateImportEntries(entries);
+        const totalNominal = annotated.reduce((acc, it) => acc + (it.jenis === 'tarik' ? -it.nominal : it.nominal), 0);
         state.importDraft = {
           fileName: file.name,
           newStudents: Array.from(newStudentMap.values()),
-          entries,
+          entries: annotated,
+          countNew,
+          countUpdate,
+          countSkip,
           totalNominal
         };
         renderKelola(container);
@@ -3229,24 +3463,82 @@
         });
       }
 
-      const txRows = [];
-      draft.entries.forEach(it => {
-        const sid = it.siswa_id || nameToId.get(it.nama_lengkap);
-        if (!sid) return;
-        txRows.push({
-          siswa_id: sid,
-          kelas_id: state.activeKelasId,
-          tanggal: it.tanggal,
-          jenis: it.jenis,
-          nominal: it.nominal,
-          keterangan: it.keterangan
-        });
+      // Kelompokkan transaksi eksisting berdasarkan (siswa_id + tanggal) untuk mencegah data ganda
+      const existingByKey = new Map();
+      getTxAktifKelas().forEach(tx => {
+        const key = `${tx.siswa_id}|${tx.tanggal}`;
+        if (!existingByKey.has(key)) existingByKey.set(key, []);
+        existingByKey.get(key).push(tx);
       });
 
-      if (!txRows.length) throw new Error('Tidak ada transaksi valid yang bisa disimpan.');
+      const toInsert = [];
+      let insertedCount = 0;
+      let updatedCount = 0;
+      let skippedCount = 0;
 
-      await dbInsert('transaksi_tabungan', txRows);
-      showToast(`Berhasil mengimpor ${txRows.length} transaksi tabungan!`);
+      for (const it of draft.entries) {
+        const sid = it.siswa_id || nameToId.get(it.nama_lengkap);
+        if (!sid) continue;
+
+        const key = `${sid}|${it.tanggal}`;
+        const matches = existingByKey.get(key) || [];
+        const incomingNet = it.jenis === 'tarik' ? -Math.abs(it.nominal) : Math.abs(it.nominal);
+
+        if (matches.length > 0) {
+          const existingNet = matches.reduce((a, t) => a + signedNominal(t), 0);
+          if (existingNet === incomingNet) {
+            // Data identik sudah ada -> lewati agar tidak ganda
+            skippedCount++;
+            continue;
+          }
+          // Nominal berubah -> perbarui data eksisting tanpa menambah baris ganda
+          if (matches.length === 1) {
+            await dbUpdate('transaksi_tabungan', matches[0].id, {
+              jenis: it.jenis,
+              nominal: it.nominal,
+              keterangan: it.keterangan,
+              updated_at: new Date().toISOString()
+            });
+          } else {
+            for (const m of matches) {
+              await dbDelete('transaksi_tabungan', m.id);
+            }
+            toInsert.push({
+              siswa_id: sid,
+              kelas_id: state.activeKelasId,
+              tanggal: it.tanggal,
+              jenis: it.jenis,
+              nominal: it.nominal,
+              keterangan: it.keterangan
+            });
+          }
+          updatedCount++;
+        } else {
+          toInsert.push({
+            siswa_id: sid,
+            kelas_id: state.activeKelasId,
+            tanggal: it.tanggal,
+            jenis: it.jenis,
+            nominal: it.nominal,
+            keterangan: it.keterangan
+          });
+          insertedCount++;
+        }
+      }
+
+      if (toInsert.length) {
+        await dbInsert('transaksi_tabungan', toInsert);
+      }
+
+      if (insertedCount === 0 && updatedCount === 0) {
+        showToast(`Semua data (${skippedCount} transaksi) sudah ada — tidak ada data ganda ditambahkan.`);
+      } else {
+        const parts = [];
+        if (insertedCount) parts.push(`${insertedCount} baru`);
+        if (updatedCount) parts.push(`${updatedCount} diperbarui`);
+        if (skippedCount) parts.push(`${skippedCount} dilewati (sudah ada)`);
+        showToast(`Impor selesai: ${parts.join(', ')}.`);
+      }
     }
 
     async function handleUploadExcelBulananDirect(e, tp, bObj, year, siswaList) {
@@ -3337,11 +3629,15 @@
           return;
         }
 
-        const totalNominal = entries.reduce((acc, it) => acc + (it.jenis === 'tarik' ? -it.nominal : it.nominal), 0);
+        const { annotated, countNew, countUpdate, countSkip } = annotateImportEntries(entries);
+        const totalNominal = annotated.reduce((acc, it) => acc + (it.jenis === 'tarik' ? -it.nominal : it.nominal), 0);
         const draft = {
           fileName: file.name,
           newStudents: Array.from(newStudentMap.values()),
-          entries,
+          entries: annotated,
+          countNew,
+          countUpdate,
+          countSkip,
           totalNominal
         };
 
@@ -3349,9 +3645,11 @@
           title: `Pratinjau Upload — ${bObj.name} ${year}`,
           wide: true,
           bodyHtml: `
-            <div style="margin-bottom:12px; font-size:13px; color:var(--text-muted);">
+            <div style="margin-bottom:12px; font-size:13px; color:var(--text-muted); line-height:1.6;">
               File: <strong>${escapeHtml(draft.fileName)}</strong><br/>
-              <strong>${draft.entries.length}</strong> transaksi terbaca •
+              <strong style="color:var(--leaf-700);">${draft.countNew}</strong> baru •
+              <strong style="color:var(--warning);">${draft.countUpdate}</strong> diperbarui •
+              <strong>${draft.countSkip}</strong> sudah ada (dilewati) •
               <strong>${draft.newStudents.length}</strong> siswa baru •
               Total: <strong style="color:var(--leaf-700);">${fmtRp(draft.totalNominal)}</strong>
             </div>
@@ -3360,7 +3658,7 @@
                 <thead>
                   <tr>
                     <th>Nama Siswa</th>
-                    <th>Status</th>
+                    <th>Status Impor</th>
                     <th>Tanggal</th>
                     <th>Jenis</th>
                     <th style="text-align:right;">Nominal</th>
@@ -3370,7 +3668,7 @@
                   ${draft.entries.slice(0, 60).map(it => `
                     <tr>
                       <td style="font-weight:700;">${escapeHtml(it.nama_lengkap)}</td>
-                      <td>${it.isNewStudent ? '<span class="badge badge-green">Siswa Baru</span>' : '<span class="badge badge-gray">Terdaftar</span>'}</td>
+                      <td>${it.syncStatus === 'skip' ? '<span class="badge badge-gray">Sudah Ada (Dilewati)</span>' : (it.syncStatus === 'update' ? '<span class="badge" style="background:var(--warning-bg);color:var(--warning);">Diperbarui</span>' : (it.isNewStudent ? '<span class="badge badge-green">Baru (+Siswa)</span>' : '<span class="badge badge-green">Baru</span>'))}</td>
                       <td>${it.tanggal}</td>
                       <td><span class="badge ${it.jenis === 'tarik' ? 'badge-red' : 'badge-green'}">${it.jenis === 'tarik' ? 'Penarikan' : 'Setoran'}</span></td>
                       <td style="text-align:right; font-weight:700;">${fmtRp(it.nominal)}</td>
