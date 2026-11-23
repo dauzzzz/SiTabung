@@ -1,0 +1,3286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#15803d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="SiTabung" />
+  <title>SiTabung — Aplikasi Tabungan Kelas</title>
+
+  <!-- PWA Manifest via Data URI (Single-File PWA) -->
+  <link rel="manifest" id="pwa-manifest-link" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22SiTabung%20%E2%80%94%20Tabungan%20Kelas%22%2C%22short_name%22%3A%22SiTabung%22%2C%22description%22%3A%22Aplikasi%20pencatatan%20tabungan%20siswa%20multi-kelas%20dan%20multi-tahun%20ajaran%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4fbf6%22%2C%22theme_color%22%3A%22%2315803d%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%25270%25200%2520512%2520512%2527%253E%253Crect%2520width%3D%2527512%2527%2520height%3D%2527512%2527%2520rx%3D%2527112%2527%2520fill%3D%2527%252315803d%2527%2F%253E%253Cpath%2520d%3D%2527M144%2520288c0-70.7%252057.3-128%2520128-128h80v48h-80c-44.2%25200-80%252035.8-80%252080s35.8%252080%252080%252080h80v48h-80c-70.7%25200-128-57.3-128-128z%2527%2520fill%3D%2527%2523bbf7d0%2527%2F%253E%253Ccircle%2520cx%3D%2527320%2527%2520cy%3D%2527288%2527%2520r%3D%252748%2527%2520fill%3D%2527%2523ffffff%2527%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D' />
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- SheetJS untuk Export & Import Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <style>
+    /* =====================================================================
+       DESIGN SYSTEM: LEAF GREEN GLASSMORPHISM (CLEAN CORPORATE + FRESH)
+       ===================================================================== */
+    :root {
+      --leaf-50: #f0fdf4;
+      --leaf-100: #dcfce7;
+      --leaf-200: #bbf7d0;
+      --leaf-300: #86efac;
+      --leaf-400: #4ade80;
+      --leaf-500: #22c55e;
+      --leaf-600: #16a34a;
+      --leaf-700: #15803d;
+      --leaf-800: #166534;
+      --leaf-900: #14532d;
+
+      --bg-base: #f6fbf7;
+      --surface-glass: rgba(255, 255, 255, 0.78);
+      --surface-glass-strong: rgba(255, 255, 255, 0.92);
+      --border-glass: rgba(22, 163, 74, 0.16);
+      --border-subtle: rgba(15, 23, 42, 0.08);
+
+      --text-main: #0f291a;
+      --text-muted: #4b6857;
+      --text-soft: #749080;
+
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --shadow-glass: 0 10px 30px -10px rgba(21, 128, 61, 0.12), 0 4px 12px -4px rgba(15, 41, 26, 0.05);
+      --shadow-float: 0 18px 40px -12px rgba(21, 128, 61, 0.22);
+      --sidebar-w: 268px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      background: var(--bg-base);
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Full Page Wrapper menutupi seluruh elemen bawaan Blogger tanpa edit XML */
+    #sitabung-root {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(134, 239, 172, 0.35), transparent 36%),
+        radial-gradient(circle at 88% 14%, rgba(74, 222, 128, 0.22), transparent 34%),
+        radial-gradient(circle at 50% 95%, rgba(187, 247, 208, 0.42), transparent 40%),
+        #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Scrollbar rapi */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(22, 163, 74, 0.25); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(22, 163, 74, 0.45); }
+
+    /* =====================================================================
+       PREVIEW BANNER (Hanya tampil jika IS_PREVIEW === true)
+       ===================================================================== */
+    .preview-banner {
+      background: linear-gradient(90deg, #14532d, #15803d, #16a34a);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-shrink: 0;
+      z-index: 50;
+      letter-spacing: 0.2px;
+    }
+    .preview-pill {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    /* =====================================================================
+       GLASS COMPONENTS & BUTTONS
+       ===================================================================== */
+    .glass-card {
+      background: var(--surface-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--leaf-600), var(--leaf-700));
+      color: #fff;
+      box-shadow: 0 6px 16px -4px rgba(21, 128, 61, 0.42);
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px -4px rgba(21, 128, 61, 0.5);
+    }
+    .btn-soft {
+      background: var(--leaf-100);
+      color: var(--leaf-800);
+      border: 1px solid rgba(22, 163, 74, 0.18);
+    }
+    .btn-soft:hover:not(:disabled) { background: var(--leaf-200); }
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--text-main);
+      border: 1px solid var(--border-glass);
+    }
+    .btn-outline:hover:not(:disabled) {
+      border-color: var(--leaf-500);
+      color: var(--leaf-700);
+      background: var(--leaf-50);
+    }
+    .btn-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+    .btn-danger:hover:not(:disabled) { background: #fee2e2; }
+    .btn-sm { padding: 7px 12px; font-size: 12.5px; border-radius: 8px; }
+    .btn-icon { padding: 8px; width: 36px; height: 36px; }
+
+    .input, .select {
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(22, 163, 74, 0.24);
+      background: rgba(255, 255, 255, 0.92);
+      font-family: inherit;
+      font-size: 13.5px;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input:focus, .select:focus {
+      border-color: var(--leaf-600);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+    }
+    .field-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    /* =====================================================================
+       LOGIN VIEW
+       ===================================================================== */
+    #login-screen {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .login-box {
+      width: 100%;
+      max-width: 430px;
+      padding: 34px 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-box::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--leaf-400), var(--leaf-600), var(--leaf-800));
+    }
+    .brand-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--leaf-500), var(--leaf-700));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 12px 24px -6px rgba(22, 163, 74, 0.45);
+      margin-bottom: 18px;
+    }
+    .login-title { font-size: 23px; font-weight: 800; letter-spacing: -0.4px; }
+    .login-sub { font-size: 13.5px; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
+    .form-group { margin-top: 16px; }
+    .login-error {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--danger-bg);
+      color: var(--danger);
+      font-size: 12.5px;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* =====================================================================
+       MAIN APP SHELL (DESKTOP SIDEBAR + MOBILE BOTTOM NAV)
+       ===================================================================== */
+    #app-shell {
+      flex: 1;
+      display: none;
+      min-height: 0;
+      position: relative;
+    }
+    #app-shell.active { display: flex; }
+
+    /* Desktop Fixed Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border-glass);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 14px;
+      z-index: 20;
+    }
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px 20px;
+      border-bottom: 1px solid var(--border-glass);
+      margin-bottom: 16px;
+    }
+    .sidebar-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--leaf-500), var(--leaf-700));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 8px 18px -4px rgba(22, 163, 74, 0.4);
+    }
+    .sidebar-brand h1 { font-size: 17px; font-weight: 800; line-height: 1.1; color: var(--leaf-900); }
+    .sidebar-brand span { font-size: 11.5px; color: var(--text-muted); font-weight: 500; }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: transparent;
+      text-align: left;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    .nav-item:hover {
+      background: var(--leaf-50);
+      color: var(--leaf-800);
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--leaf-600), var(--leaf-700));
+      color: #ffffff;
+      box-shadow: 0 8px 18px -6px rgba(21, 128, 61, 0.5);
+    }
+
+    .sidebar-footer {
+      padding-top: 14px;
+      border-top: 1px solid var(--border-glass);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .admin-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      background: var(--leaf-50);
+      border: 1px solid var(--border-glass);
+    }
+    .admin-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--leaf-700);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .admin-meta { min-width: 0; flex: 1; }
+    .admin-meta div { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .admin-meta span { font-size: 11px; color: var(--text-muted); }
+
+    /* Main Workspace */
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    /* Top Bar with Global Year & Class Switcher */
+    .topbar {
+      padding: 14px 24px;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      z-index: 15;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .page-heading { font-size: 18px; font-weight: 800; color: var(--leaf-900); letter-spacing: -0.3px; }
+    .switcher-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .switcher-select {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(22, 163, 74, 0.28);
+      background: rgba(255, 255, 255, 0.92);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--leaf-900);
+      cursor: pointer;
+      outline: none;
+    }
+    .switcher-select:focus { border-color: var(--leaf-600); }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    /* Scrollable Content */
+    .content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 24px 36px;
+    }
+
+    /* Mobile Floating Bottom Navigation */
+    .mobile-bottom-nav {
+      display: none;
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(22, 163, 74, 0.24);
+      border-radius: 20px;
+      box-shadow: var(--shadow-float);
+      padding: 6px;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .m-nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 7px 4px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 10.5px;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .m-nav-btn.active {
+      background: linear-gradient(135deg, var(--leaf-600), var(--leaf-700));
+      color: #fff;
+      box-shadow: 0 6px 14px -4px rgba(21, 128, 61, 0.45);
+    }
+
+    /* =====================================================================
+       DASHBOARD, STATS, CHARTS, TABLES
+       ===================================================================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card.featured {
+      background: linear-gradient(135deg, var(--leaf-700), var(--leaf-600), #22c55e);
+      color: #fff;
+      border: none;
+      box-shadow: 0 14px 28px -10px rgba(21, 128, 61, 0.5);
+    }
+    .stat-label { font-size: 12px; font-weight: 600; opacity: 0.85; display: flex; align-items: center; justify-content: space-between; }
+    .stat-value { font-size: 23px; font-weight: 800; margin-top: 8px; letter-spacing: -0.5px; }
+    .stat-sub { font-size: 11.5px; margin-top: 5px; opacity: 0.78; }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 18px;
+    }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .card-title { font-size: 15px; font-weight: 800; color: var(--leaf-900); }
+    .card-body { padding: 18px 20px; }
+
+    /* Bar Chart 12 Bulan */
+    .chart-wrap {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      height: 210px;
+      padding-top: 22px;
+    }
+    .chart-col {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .chart-bar-track {
+      width: 100%;
+      max-width: 30px;
+      flex: 1;
+      background: var(--leaf-50);
+      border-radius: 99px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      border: 1px solid rgba(22, 163, 74, 0.12);
+    }
+    .chart-bar-fill {
+      width: 100%;
+      background: linear-gradient(180deg, var(--leaf-400), var(--leaf-700));
+      border-radius: 99px;
+      transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      min-height: 0;
+    }
+    .chart-col:hover .chart-bar-fill { filter: brightness(1.08); }
+    .chart-lbl { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+    .chart-val { font-size: 10px; font-weight: 700; color: var(--leaf-700); min-height: 14px; }
+
+    /* Recent Transactions List */
+    .tx-list { display: flex; flex-direction: column; gap: 10px; }
+    .tx-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 13px;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid var(--border-glass);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .tx-row:hover {
+      border-color: var(--leaf-500);
+      background: var(--leaf-50);
+      transform: translateX(2px);
+    }
+    .tx-left { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .tx-dot {
+      width: 36px; height: 36px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; flex-shrink: 0;
+    }
+    .tx-dot.setor { background: var(--leaf-100); color: var(--leaf-700); }
+    .tx-dot.tarik { background: var(--danger-bg); color: var(--danger); }
+    .tx-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tx-meta { font-size: 11.5px; color: var(--text-muted); }
+    .tx-amount { font-size: 13.5px; font-weight: 800; white-space: nowrap; }
+    .tx-amount.setor { color: var(--leaf-700); }
+    .tx-amount.tarik { color: var(--danger); }
+
+    /* Tables & Excel-like Interactive Matrix */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid var(--border-glass);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    table.data-table th {
+      background: var(--leaf-50);
+      color: var(--leaf-900);
+      font-weight: 700;
+      text-align: left;
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border-glass);
+      white-space: nowrap;
+    }
+    table.data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(22, 163, 74, 0.09);
+      vertical-align: middle;
+    }
+    table.data-table tr:last-child td { border-bottom: none; }
+    table.data-table tbody tr:hover td { background: rgba(240, 253, 244, 0.65); }
+
+    /* Matrix Table (Tanggal 1-31 & Tahunan) */
+    table.matrix-table {
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 12px;
+      width: max-content;
+      min-width: 100%;
+    }
+    table.matrix-table th, table.matrix-table td {
+      border-right: 1px solid rgba(22, 163, 74, 0.12);
+      border-bottom: 1px solid rgba(22, 163, 74, 0.12);
+      padding: 7px 8px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    table.matrix-table thead th {
+      background: var(--leaf-700);
+      color: #fff;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+    table.matrix-table .sticky-no {
+      position: sticky; left: 0; z-index: 2;
+      background: #fff; width: 42px; min-width: 42px;
+    }
+    table.matrix-table .sticky-name {
+      position: sticky; left: 42px; z-index: 2;
+      background: #fff; text-align: left;
+      min-width: 185px; max-width: 220px;
+      font-weight: 700; color: var(--text-main);
+      box-shadow: 3px 0 6px -3px rgba(15, 41, 26, 0.1);
+    }
+    table.matrix-table thead .sticky-no,
+    table.matrix-table thead .sticky-name {
+      background: var(--leaf-800);
+      color: #fff;
+      z-index: 5;
+    }
+    .matrix-cell {
+      cursor: pointer;
+      min-width: 58px;
+      transition: background 0.14s, transform 0.1s;
+    }
+    .matrix-cell:hover {
+      background: var(--leaf-100) !important;
+      outline: 2px solid var(--leaf-500);
+      outline-offset: -2px;
+    }
+    .matrix-cell.filled {
+      background: rgba(220, 252, 231, 0.55);
+      color: var(--leaf-800);
+      font-weight: 700;
+    }
+    .matrix-cell.neg {
+      background: rgba(254, 226, 226, 0.6);
+      color: var(--danger);
+      font-weight: 700;
+    }
+    .matrix-total-col {
+      background: var(--leaf-50);
+      font-weight: 800;
+      color: var(--leaf-900);
+      text-align: right !important;
+      padding-right: 12px !important;
+    }
+    .matrix-foot td {
+      background: var(--leaf-100) !important;
+      font-weight: 800;
+      color: var(--leaf-900);
+    }
+
+    /* Student Cards Grid */
+    .student-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 14px;
+    }
+    .student-card {
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .student-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--leaf-500);
+      box-shadow: var(--shadow-float);
+    }
+    .student-top { display: flex; align-items: center; gap: 12px; }
+    .student-num {
+      width: 36px; height: 36px; border-radius: 11px;
+      background: var(--leaf-100); color: var(--leaf-800);
+      font-weight: 800; font-size: 13px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .student-name { font-size: 14px; font-weight: 800; line-height: 1.3; }
+    .student-saldo { font-size: 19px; font-weight: 800; color: var(--leaf-700); }
+
+    /* Sub Tabs */
+    .sub-tabs {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid var(--border-glass);
+      border-radius: 13px;
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .sub-tab {
+      padding: 8px 15px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .sub-tab.active {
+      background: var(--leaf-600);
+      color: #fff;
+      box-shadow: 0 4px 10px -2px rgba(22, 163, 74, 0.4);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 42px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state h3 { font-size: 16px; color: var(--text-main); margin: 10px 0 5px; }
+    .empty-state p { font-size: 13px; max-width: 380px; margin: 0 auto 14px; line-height: 1.5; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    }
+    .badge-green { background: var(--leaf-100); color: var(--leaf-800); }
+    .badge-red { background: var(--danger-bg); color: var(--danger); }
+    .badge-gray { background: #f1f5f9; color: #475569; }
+
+    /* =====================================================================
+       MODALS & TOAST (NO alert() / confirm())
+       ===================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1000010;
+      background: rgba(15, 41, 26, 0.42);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--border-glass);
+      border-radius: 22px;
+      box-shadow: 0 25px 60px -15px rgba(15, 41, 26, 0.35);
+      overflow: hidden;
+      animation: modalPop 0.2s ease;
+    }
+    .modal-box.wide { max-width: 720px; }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.95) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--leaf-50);
+    }
+    .modal-head h3 { font-size: 16px; font-weight: 800; color: var(--leaf-900); }
+    .modal-body { padding: 18px 20px; overflow-y: auto; }
+    .modal-foot {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: rgba(240, 253, 244, 0.5);
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 1000050;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto;
+      padding: 12px 16px;
+      border-radius: 13px;
+      background: var(--leaf-900);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 12px 28px -6px rgba(15, 41, 26, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      animation: toastIn 0.22s ease;
+    }
+    .toast.error { background: #b91c1c; }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Quick Nominal Chips */
+    .nominal-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .chip-btn {
+      padding: 5px 10px; border-radius: 99px;
+      border: 1px solid rgba(22, 163, 74, 0.25);
+      background: var(--leaf-50); color: var(--leaf-800);
+      font-size: 11.5px; font-weight: 700; cursor: pointer;
+    }
+    .chip-btn:hover { background: var(--leaf-200); }
+
+    /* =====================================================================
+       RESPONSIVE MEDIA QUERIES (MOBILE BOTTOM NAV & LAYOUT)
+       ===================================================================== */
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dash-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none !important; }
+      .mobile-bottom-nav { display: flex; }
+      .topbar { padding: 12px 14px; }
+      .content-scroll { padding: 14px 14px 96px; }
+      .page-heading { font-size: 16px; }
+      .stat-value { font-size: 19px; }
+      .hide-mobile { display: none !important; }
+    }
+
+    /* Print Styles */
+    @media print {
+      #sitabung-root { position: static; overflow: visible; background: #fff; }
+      .sidebar, .mobile-bottom-nav, .topbar-actions, .preview-banner, .no-print { display: none !important; }
+      .content-scroll { overflow: visible; padding: 0; }
+      .table-wrap { border: 1px solid #cbd5e1; overflow: visible; }
+      table.matrix-table { font-size: 9px; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sitabung-root">
+    <!-- Banner Mode Preview (Otomatis hilang 100% jika IS_PREVIEW = false) -->
+    <div id="preview-banner" class="preview-banner" style="display:none;">
+      <span class="preview-pill">Mode Preview Aktif</span>
+      <span>Data uji coba lokal (tidak terhubung ke Supabase). Ubah IS_PREVIEW = false saat deploy.</span>
+    </div>
+
+    <!-- ===============================================================
+         HALAMAN LOGIN (KHUSUS ADMIN / GURU)
+         =============================================================== -->
+    <section id="login-screen">
+      <div class="glass-card login-box">
+        <div class="brand-badge">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16 11h.01"/></svg>
+        </div>
+        <h1 class="login-title">SiTabung Kelas</h1>
+        <p class="login-sub">Masuk sebagai Guru / Admin untuk mengelola tabungan siswa lintas kelas &amp; tahun pelajaran.</p>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label class="field-label" for="login-email">Email Admin</label>
+            <input id="login-email" type="email" class="input" placeholder="guru@sekolah.sch.id" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="login-password">Password</label>
+            <input id="login-password" type="password" class="input" placeholder="••••••••" required autocomplete="current-password" />
+          </div>
+          <div id="login-error" class="login-error"></div>
+          <div class="form-group">
+            <button id="btn-login-submit" type="submit" class="btn btn-primary" style="width:100%; padding:12px;">
+              Masuk ke Aplikasi
+            </button>
+          </div>
+        </form>
+
+        <!-- Tombol Pintas Preview (Hanya dirender jika IS_PREVIEW === true) -->
+        <div id="preview-quick-login-wrap" style="display:none; margin-top:16px; padding-top:16px; border-top:1px dashed var(--border-glass);">
+          <button id="btn-preview-login" type="button" class="btn btn-soft" style="width:100%;">
+            ⚡ Masuk Cepat Mode Preview (Admin)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===============================================================
+         SHELL APLIKASI UTAMA
+         =============================================================== -->
+    <div id="app-shell">
+      <!-- Desktop Fixed Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="sidebar-logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/></svg>
+          </div>
+          <div>
+            <h1>SiTabung</h1>
+            <span id="sidebar-school-sub">Tabungan Kelas Digital</span>
+          </div>
+        </div>
+
+        <nav class="nav-list" id="desktop-nav">
+          <button class="nav-item active" data-view="dashboard">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
+            Dashboard
+          </button>
+          <button class="nav-item" data-view="peranak">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Rekap Per Anak
+          </button>
+          <button class="nav-item" data-view="bulanan">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Rekap Bulanan (1-31)
+          </button>
+          <button class="nav-item" data-view="tahunan">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Rekap Tahunan
+          </button>
+          <button class="nav-item" data-view="kelola">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Kelola Data &amp; HP
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button id="btn-install-sidebar" class="btn btn-soft btn-sm" style="display:none; width:100%;">
+            📲 Install di HP / Desktop
+          </button>
+          <div class="admin-chip">
+            <div class="admin-avatar" id="admin-avatar-txt">G</div>
+            <div class="admin-meta">
+              <div id="admin-email-txt">Admin Guru</div>
+              <span>Administrator</span>
+            </div>
+            <button id="btn-logout-desktop" class="btn btn-icon btn-outline" title="Keluar">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Area -->
+      <div class="main-area">
+        <header class="topbar">
+          <div class="topbar-left">
+            <h2 class="page-heading" id="page-heading">Dashboard</h2>
+            <div class="switcher-group">
+              <select id="global-tp-select" class="switcher-select" title="Pilih Tahun Pelajaran"></select>
+              <select id="global-kelas-select" class="switcher-select" title="Pilih Kelas"></select>
+            </div>
+          </div>
+          <div class="topbar-actions">
+            <button id="btn-quick-massal" class="btn btn-soft btn-sm">
+              + Catat Massal
+            </button>
+            <button id="btn-quick-satuan" class="btn btn-primary btn-sm">
+              + Catat Tabungan
+            </button>
+            <button id="btn-logout-mobile" class="btn btn-outline btn-sm" style="display:none;" title="Keluar">
+              Keluar
+            </button>
+          </div>
+        </header>
+
+        <main class="content-scroll" id="main-content">
+          <!-- Konten dirender dinamis oleh JS -->
+        </main>
+      </div>
+
+      <!-- Mobile Floating Bottom Navigation -->
+      <nav class="mobile-bottom-nav" id="mobile-nav">
+        <button class="m-nav-btn active" data-view="dashboard">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
+          Beranda
+        </button>
+        <button class="m-nav-btn" data-view="peranak">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Per Anak
+        </button>
+        <button class="m-nav-btn" data-view="bulanan">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Bulanan
+        </button>
+        <button class="m-nav-btn" data-view="tahunan">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Tahunan
+        </button>
+        <button class="m-nav-btn" data-view="kelola">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09"/></svg>
+          Kelola
+        </button>
+      </nav>
+    </div>
+
+    <!-- Modal Universal -->
+    <div id="app-modal" class="modal-backdrop">
+      <div id="app-modal-box" class="modal-box">
+        <div class="modal-head">
+          <h3 id="modal-title">Judul Modal</h3>
+          <button id="modal-close-btn" class="btn btn-icon btn-outline" type="button" aria-label="Tutup">✕</button>
+        </div>
+        <div id="modal-body" class="modal-body"></div>
+        <div id="modal-foot" class="modal-foot"></div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <!-- ===================================================================
+       MAIN APPLICATION SCRIPT (ES MODULE + SUPABASE + DYNAMIC PWA SW)
+       =================================================================== -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    // =====================================================================
+    // KONFIGURASI APLIKASI (SAKLAR DEPLOYMENT)
+    // =====================================================================
+    const IS_PREVIEW = false; // Ubah menjadi false SAAT DEPLOY agar mode preview & data dummy hilang dan terhubung 100% ke Supabase
+    const SUPABASE_URL = "https://oohzibxlgujgldwozyby.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_aMth-oupHS1vhLBUZS62Dg_XnmMGQNi";
+
+    // Inisialisasi client Supabase hanya saat produksi (IS_PREVIEW === false)
+    const supabase = !IS_PREVIEW ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    // =====================================================================
+    // SERVICE WORKER DINAMIS VIA BLOB (PWA 1 FILE)
+    // =====================================================================
+    let deferredPrompt = null;
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      try {
+        const swCode = `
+          const CACHE_NAME = 'sitabung-pwa-v1';
+          self.addEventListener('install', (e) => self.skipWaiting());
+          self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+          self.addEventListener('fetch', (e) => {
+            if (e.request.method !== 'GET') return;
+            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+      } catch (_) {}
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btnSide = document.getElementById('btn-install-sidebar');
+      if (btnSide) btnSide.style.display = 'inline-flex';
+      if (state.view === 'kelola') renderCurrentView();
+    });
+
+    // =====================================================================
+    // KONSTANTA KALENDER TAHUN PELAJARAN (JULI - JUNI)
+    // =====================================================================
+    const BULAN_TP = [
+      { idx: 0, month: 7, offsetYear: 0, short: 'Jul', name: 'Juli' },
+      { idx: 1, month: 8, offsetYear: 0, short: 'Agu', name: 'Agustus' },
+      { idx: 2, month: 9, offsetYear: 0, short: 'Sep', name: 'September' },
+      { idx: 3, month: 10, offsetYear: 0, short: 'Okt', name: 'Oktober' },
+      { idx: 4, month: 11, offsetYear: 0, short: 'Nov', name: 'November' },
+      { idx: 5, month: 12, offsetYear: 0, short: 'Des', name: 'Desember' },
+      { idx: 6, month: 1, offsetYear: 1, short: 'Jan', name: 'Januari' },
+      { idx: 7, month: 2, offsetYear: 1, short: 'Feb', name: 'Februari' },
+      { idx: 8, month: 3, offsetYear: 1, short: 'Mar', name: 'Maret' },
+      { idx: 9, month: 4, offsetYear: 1, short: 'Apr', name: 'April' },
+      { idx: 10, month: 5, offsetYear: 1, short: 'Mei', name: 'Mei' },
+      { idx: 11, month: 6, offsetYear: 1, short: 'Jun', name: 'Juni' }
+    ];
+
+    // =====================================================================
+    // STATE APLIKASI & DATA DUMMY MINIMALIS (HANYA UNTUK IS_PREVIEW = true)
+    // =====================================================================
+    const state = {
+      user: null,
+      view: 'dashboard',
+      kelolaTab: 'siswa',
+      selectedStudentId: null,
+      searchStudent: '',
+      selectedMonthIdx: (() => {
+        const m = new Date().getMonth() + 1;
+        const found = BULAN_TP.findIndex(b => b.month === m);
+        return found >= 0 ? found : 0;
+      })(),
+      tahunPelajaran: [],
+      kelas: [],
+      siswa: [],
+      transaksi: [],
+      activeTpId: null,
+      activeKelasId: null,
+      importMode: 'bulanan',
+      importMonthIdx: 0,
+      importDraft: null
+    };
+
+    // Data dummy lokal SANGAT MINIMALIS (maks 1-2 baris/tabel), HANYA dipakai saat IS_PREVIEW === true
+    const previewStore = IS_PREVIEW ? {
+      tahun_pelajaran: [
+        { id: 'tp-1', nama: '2026/2027', tahun_mulai: 2026, is_aktif: true }
+      ],
+      kelas: [
+        { id: 'kls-1', tahun_pelajaran_id: 'tp-1', nama_kelas: 'KELAS V (LIMA)', nama_sekolah: 'SDN Harapan Bangsa', wali_kelas: 'Ibu Siti Aminah, S.Pd' }
+      ],
+      siswa: [
+        { id: 'sis-1', kelas_id: 'kls-1', no_urut: 1, nama_lengkap: 'ACHMAD ALBY ANANDIO', aktif: true },
+        { id: 'sis-2', kelas_id: 'kls-1', no_urut: 2, nama_lengkap: 'ADINDA PUTRI AYUNITA', aktif: true }
+      ],
+      transaksi_tabungan: [
+        { id: 'tx-1', siswa_id: 'sis-1', kelas_id: 'kls-1', tanggal: '2026-07-23', jenis: 'setor', nominal: 50000, keterangan: 'Setoran awal' },
+        { id: 'tx-2', siswa_id: 'sis-2', kelas_id: 'kls-1', tanggal: '2026-07-27', jenis: 'setor', nominal: 20000, keterangan: 'Tabungan harian' }
+      ]
+    } : null;
+
+    // =====================================================================
+    // UTILITIES
+    // =====================================================================
+    const uid = () => 'id-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    const fmtRp = (n) => {
+      const val = Number(n || 0);
+      return (val < 0 ? '-Rp ' : 'Rp ') + Math.abs(val).toLocaleString('id-ID');
+    };
+    const fmtCompact = (n) => {
+      const val = Number(n || 0);
+      if (val === 0) return '';
+      if (Math.abs(val) >= 1000) return (val / 1000).toLocaleString('id-ID') + 'k';
+      return val.toLocaleString('id-ID');
+    };
+    const todayISO = () => {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
+    const escapeHtml = (str = '') => String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    const getActiveTp = () => state.tahunPelajaran.find(t => t.id === state.activeTpId) || null;
+    const getActiveKelas = () => state.kelas.find(k => k.id === state.activeKelasId) || null;
+    const getKelasByTp = (tpId) => state.kelas.filter(k => k.tahun_pelajaran_id === tpId);
+    const getSiswaAktifKelas = () => state.siswa
+      .filter(s => s.kelas_id === state.activeKelasId)
+      .sort((a, b) => (a.no_urut || 999) - (b.no_urut || 999) || a.nama_lengkap.localeCompare(b.nama_lengkap));
+    const getTxAktifKelas = () => state.transaksi.filter(t => t.kelas_id === state.activeKelasId);
+    const signedNominal = (tx) => tx.jenis === 'tarik' ? -Math.abs(Number(tx.nominal || 0)) : Math.abs(Number(tx.nominal || 0));
+
+    function showToast(message, isError = false) {
+      const wrap = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = 'toast' + (isError ? ' error' : '');
+      el.innerHTML = `<span>${isError ? '⚠️' : '✅'}</span><span>${escapeHtml(message)}</span>`;
+      wrap.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transition = 'opacity 0.25s';
+        setTimeout(() => el.remove(), 250);
+      }, 2800);
+    }
+
+    function openModal({ title, bodyHtml, footHtml = '', wide = false }) {
+      const backdrop = document.getElementById('app-modal');
+      const box = document.getElementById('app-modal-box');
+      box.className = 'modal-box' + (wide ? ' wide' : '');
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').innerHTML = bodyHtml;
+      document.getElementById('modal-foot').innerHTML = footHtml;
+      backdrop.classList.add('open');
+    }
+    function closeModal() {
+      document.getElementById('app-modal').classList.remove('open');
+    }
+
+    function openConfirmModal(title, message, onConfirm, confirmLabel = 'Ya, Hapus') {
+      openModal({
+        title,
+        bodyHtml: `<p style="font-size:14px; color:var(--text-muted); line-height:1.6;">${escapeHtml(message)}</p>`,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="cfm-cancel">Batal</button>
+          <button type="button" class="btn btn-danger" id="cfm-ok">${escapeHtml(confirmLabel)}</button>
+        `
+      });
+      document.getElementById('cfm-cancel').onclick = closeModal;
+      document.getElementById('cfm-ok').onclick = async () => {
+        const btn = document.getElementById('cfm-ok');
+        btn.disabled = true;
+        btn.textContent = 'Memproses...';
+        try {
+          await onConfirm();
+          closeModal();
+        } catch (err) {
+          showToast(err.message || 'Terjadi kesalahan', true);
+          btn.disabled = false;
+          btn.textContent = confirmLabel;
+        }
+      };
+    }
+
+    // =====================================================================
+    // DATA LAYER (PREVIEW LOCAL vs SUPABASE REAL-TIME)
+    // =====================================================================
+    async function loadAllData() {
+      try {
+        if (IS_PREVIEW) {
+          state.tahunPelajaran = [...previewStore.tahun_pelajaran];
+          state.kelas = [...previewStore.kelas];
+          state.siswa = [...previewStore.siswa];
+          state.transaksi = [...previewStore.transaksi_tabungan];
+        } else {
+          const [tpRes, klsRes, sisRes, txRes] = await Promise.all([
+            supabase.from('tahun_pelajaran').select('*').order('tahun_mulai', { ascending: false }),
+            supabase.from('kelas').select('*').order('nama_kelas', { ascending: true }),
+            supabase.from('siswa').select('*').order('no_urut', { ascending: true }),
+            supabase.from('transaksi_tabungan').select('*').order('tanggal', { ascending: false })
+          ]);
+          if (tpRes.error) throw tpRes.error;
+          if (klsRes.error) throw klsRes.error;
+          if (sisRes.error) throw sisRes.error;
+          if (txRes.error) throw txRes.error;
+          state.tahunPelajaran = tpRes.data || [];
+          state.kelas = klsRes.data || [];
+          state.siswa = sisRes.data || [];
+          state.transaksi = txRes.data || [];
+        }
+
+        // Pastikan activeTpId & activeKelasId valid
+        if (!state.activeTpId || !state.tahunPelajaran.some(t => t.id === state.activeTpId)) {
+          const aktif = state.tahunPelajaran.find(t => t.is_aktif) || state.tahunPelajaran[0];
+          state.activeTpId = aktif ? aktif.id : null;
+        }
+        const kelasDiTp = getKelasByTp(state.activeTpId);
+        if (!state.activeKelasId || !kelasDiTp.some(k => k.id === state.activeKelasId)) {
+          state.activeKelasId = kelasDiTp[0] ? kelasDiTp[0].id : null;
+        }
+
+        renderSwitchers();
+        renderCurrentView();
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal memuat data: ' + (err.message || err), true);
+      }
+    }
+
+    async function dbInsert(table, payload) {
+      if (IS_PREVIEW) {
+        const rows = Array.isArray(payload) ? payload : [payload];
+        const inserted = rows.map(r => ({ id: uid(), created_at: new Date().toISOString(), ...r }));
+        previewStore[table].push(...inserted);
+        return inserted;
+      }
+      const { data, error } = await supabase.from(table).insert(payload).select();
+      if (error) throw error;
+      return data;
+    }
+
+    async function dbUpdate(table, id, payload) {
+      if (IS_PREVIEW) {
+        const idx = previewStore[table].findIndex(r => r.id === id);
+        if (idx >= 0) previewStore[table][idx] = { ...previewStore[table][idx], ...payload };
+        return previewStore[table][idx];
+      }
+      const { data, error } = await supabase.from(table).update(payload).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    }
+
+    async function dbDelete(table, id) {
+      if (IS_PREVIEW) {
+        previewStore[table] = previewStore[table].filter(r => r.id !== id);
+        if (table === 'tahun_pelajaran') {
+          const klsIds = previewStore.kelas.filter(k => k.tahun_pelajaran_id === id).map(k => k.id);
+          previewStore.kelas = previewStore.kelas.filter(k => k.tahun_pelajaran_id !== id);
+          previewStore.siswa = previewStore.siswa.filter(s => !klsIds.includes(s.kelas_id));
+          previewStore.transaksi_tabungan = previewStore.transaksi_tabungan.filter(t => !klsIds.includes(t.kelas_id));
+        } else if (table === 'kelas') {
+          previewStore.siswa = previewStore.siswa.filter(s => s.kelas_id !== id);
+          previewStore.transaksi_tabungan = previewStore.transaksi_tabungan.filter(t => t.kelas_id !== id);
+        } else if (table === 'siswa') {
+          previewStore.transaksi_tabungan = previewStore.transaksi_tabungan.filter(t => t.siswa_id !== id);
+        }
+        return;
+      }
+      const { error } = await supabase.from(table).delete().eq('id', id);
+      if (error) throw error;
+    }
+
+    // =====================================================================
+    // SWITCHER & NAVIGATION
+    // =====================================================================
+    function renderSwitchers() {
+      const tpSel = document.getElementById('global-tp-select');
+      const klsSel = document.getElementById('global-kelas-select');
+
+      if (!state.tahunPelajaran.length) {
+        tpSel.innerHTML = `<option value="">Belum ada TP</option>`;
+      } else {
+        tpSel.innerHTML = state.tahunPelajaran.map(t =>
+          `<option value="${t.id}" ${t.id === state.activeTpId ? 'selected' : ''}>TP ${escapeHtml(t.nama)}${t.is_aktif ? ' ★' : ''}</option>`
+        ).join('');
+      }
+
+      const listKls = getKelasByTp(state.activeTpId);
+      if (!listKls.length) {
+        klsSel.innerHTML = `<option value="">Belum ada Kelas</option>`;
+      } else {
+        klsSel.innerHTML = listKls.map(k =>
+          `<option value="${k.id}" ${k.id === state.activeKelasId ? 'selected' : ''}>${escapeHtml(k.nama_kelas)}</option>`
+        ).join('');
+      }
+
+      const kls = getActiveKelas();
+      document.getElementById('sidebar-school-sub').textContent = kls?.nama_sekolah || 'Tabungan Kelas Digital';
+    }
+
+    function setView(viewName) {
+      state.view = viewName;
+      if (viewName !== 'peranak') state.selectedStudentId = null;
+
+      document.querySelectorAll('#desktop-nav .nav-item, #mobile-nav .m-nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === viewName);
+      });
+
+      const titles = {
+        dashboard: 'Dashboard',
+        peranak: 'Rekap Per Anak',
+        bulanan: 'Rekap Bulanan (1–31)',
+        tahunan: 'Rekap Tahunan (Jul–Jun)',
+        kelola: 'Kelola Data & HP'
+      };
+      document.getElementById('page-heading').textContent = titles[viewName] || 'Dashboard';
+      renderCurrentView();
+    }
+
+    function renderCurrentView() {
+      const container = document.getElementById('main-content');
+      if (state.view === 'dashboard') renderDashboard(container);
+      else if (state.view === 'peranak') renderPerAnak(container);
+      else if (state.view === 'bulanan') renderBulanan(container);
+      else if (state.view === 'tahunan') renderTahunan(container);
+      else if (state.view === 'kelola') renderKelola(container);
+    }
+
+    // =====================================================================
+    // 1. VIEW: DASHBOARD
+    // =====================================================================
+    function renderDashboard(container) {
+      const tp = getActiveTp();
+      const kls = getActiveKelas();
+      if (!tp || !kls) {
+        container.innerHTML = `
+          <div class="glass-card empty-state">
+            <div style="font-size:38px;">🌱</div>
+            <h3>Belum Ada Tahun Pelajaran / Kelas</h3>
+            <p>Mulai dengan menambahkan Tahun Pelajaran dan Kelas pertama Anda di menu Kelola Data.</p>
+            <button class="btn btn-primary" id="go-kelola-btn">Buka Kelola Data</button>
+          </div>`;
+        document.getElementById('go-kelola-btn').onclick = () => setView('kelola');
+        return;
+      }
+
+      const siswaList = getSiswaAktifKelas();
+      const txList = getTxAktifKelas();
+      const totalSaldo = txList.reduce((acc, t) => acc + signedNominal(t), 0);
+
+      const now = new Date();
+      const curYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const today = todayISO();
+      const bulanIni = txList.filter(t => (t.tanggal || '').startsWith(curYM)).reduce((a, t) => a + signedNominal(t), 0);
+      const hariIni = txList.filter(t => t.tanggal === today).reduce((a, t) => a + signedNominal(t), 0);
+
+      // Hitung per bulan (Juli s.d. Juni) sesuai tahun_mulai TP
+      const monthlyTotals = BULAN_TP.map(b => {
+        const y = Number(tp.tahun_mulai) + b.offsetYear;
+        const ym = `${y}-${String(b.month).padStart(2, '0')}`;
+        const sum = txList.filter(t => (t.tanggal || '').startsWith(ym)).reduce((a, t) => a + signedNominal(t), 0);
+        return { ...b, year: y, sum };
+      });
+      const maxBar = Math.max(1, ...monthlyTotals.map(m => Math.max(0, m.sum)));
+
+      // 8 transaksi terbaru
+      const recentTx = [...txList].sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || '')).slice(0, 8);
+      const siswaMap = Object.fromEntries(siswaList.map(s => [s.id, s]));
+
+      container.innerHTML = `
+        <div class="stats-grid">
+          <div class="glass-card stat-card featured">
+            <div class="stat-label"><span>Total Saldo Kelas</span><span>💰</span></div>
+            <div class="stat-value">${fmtRp(totalSaldo)}</div>
+            <div class="stat-sub">${escapeHtml(kls.nama_kelas)} • TP ${escapeHtml(tp.nama)}</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-label"><span>Bulan Berjalan</span><span>📅</span></div>
+            <div class="stat-value" style="color:var(--leaf-700);">${fmtRp(bulanIni)}</div>
+            <div class="stat-sub">Periode ${curYM}</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-label"><span>Hari Ini</span><span>✨</span></div>
+            <div class="stat-value" style="color:var(--leaf-700);">${fmtRp(hariIni)}</div>
+            <div class="stat-sub">Tanggal ${today}</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-label"><span>Siswa Aktif</span><span>🎓</span></div>
+            <div class="stat-value">${siswaList.length} <span style="font-size:14px; font-weight:600; color:var(--text-muted);">Anak</span></div>
+            <div class="stat-sub">${escapeHtml(kls.wali_kelas || 'Wali Kelas belum diisi')}</div>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="glass-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Grafik Tabungan TP ${escapeHtml(tp.nama)}</div>
+                <div style="font-size:12px; color:var(--text-muted);">Klik batang bulan untuk membuka Rekap Bulanan</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-wrap">
+                ${monthlyTotals.map(m => {
+                  const pct = m.sum > 0 ? Math.max(8, Math.round((m.sum / maxBar) * 100)) : 0;
+                  return `
+                    <div class="chart-col" data-month-idx="${m.idx}" title="${m.name} ${m.year}: ${fmtRp(m.sum)}">
+                      <div class="chart-val">${fmtCompact(m.sum)}</div>
+                      <div class="chart-bar-track">
+                        <div class="chart-bar-fill" style="height:${pct}%;"></div>
+                      </div>
+                      <div class="chart-lbl">${m.short}</div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Transaksi Terbaru</div>
+                <div style="font-size:12px; color:var(--text-muted);">Klik baris mana pun untuk edit / hapus</div>
+              </div>
+            </div>
+            <div class="card-body">
+              ${recentTx.length === 0 ? `
+                <div class="empty-state" style="padding:24px 10px;">
+                  <div style="font-size:28px;">📝</div>
+                  <h3>Belum Ada Transaksi</h3>
+                  <p>Klik tombol "+ Catat Tabungan" di atas untuk mulai mencatat.</p>
+                </div>
+              ` : `
+                <div class="tx-list">
+                  ${recentTx.map(tx => {
+                    const sis = siswaMap[tx.siswa_id];
+                    const isTarik = tx.jenis === 'tarik';
+                    return `
+                      <div class="tx-row" data-edit-tx="${tx.id}">
+                        <div class="tx-left">
+                          <div class="tx-dot ${isTarik ? 'tarik' : 'setor'}">${isTarik ? '−' : '+'}</div>
+                          <div style="min-width:0;">
+                            <div class="tx-name">${escapeHtml(sis?.nama_lengkap || 'Siswa')}</div>
+                            <div class="tx-meta">${tx.tanggal}${tx.keterangan ? ' • ' + escapeHtml(tx.keterangan) : ''}</div>
+                          </div>
+                        </div>
+                        <div class="tx-amount ${isTarik ? 'tarik' : 'setor'}">${isTarik ? '-' : '+'}${fmtRp(tx.nominal)}</div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.querySelectorAll('.chart-col').forEach(el => {
+        el.onclick = () => {
+          state.selectedMonthIdx = Number(el.dataset.monthIdx);
+          setView('bulanan');
+        };
+      });
+      container.querySelectorAll('[data-edit-tx]').forEach(el => {
+        el.onclick = () => {
+          const tx = state.transaksi.find(t => t.id === el.dataset.editTx);
+          if (tx) openTxModal({ tx });
+        };
+      });
+    }
+
+    // =====================================================================
+    // 2. VIEW: REKAP PER ANAK (BUKU TABUNGAN DIGITAL + EDIT LANGSUNG)
+    // =====================================================================
+    function renderPerAnak(container) {
+      const tp = getActiveTp();
+      const kls = getActiveKelas();
+      if (!tp || !kls) {
+        container.innerHTML = `<div class="glass-card empty-state"><h3>Pilih / Buat Kelas Terlebih Dahulu</h3><p>Tambahkan Tahun Pelajaran & Kelas di menu Kelola Data.</p></div>`;
+        return;
+      }
+
+      const siswaList = getSiswaAktifKelas();
+      const txList = getTxAktifKelas();
+
+      // Jika sedang melihat detail 1 anak
+      if (state.selectedStudentId) {
+        const sis = siswaList.find(s => s.id === state.selectedStudentId);
+        if (!sis) { state.selectedStudentId = null; renderPerAnak(container); return; }
+
+        const txSiswa = txList.filter(t => t.siswa_id === sis.id).sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
+        const totalSetor = txSiswa.filter(t => t.jenis !== 'tarik').reduce((a, t) => a + Number(t.nominal || 0), 0);
+        const totalTarik = txSiswa.filter(t => t.jenis === 'tarik').reduce((a, t) => a + Number(t.nominal || 0), 0);
+        const saldo = totalSetor - totalTarik;
+
+        container.innerHTML = `
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" id="btn-back-anak">← Kembali ke Daftar Siswa</button>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-primary btn-sm" id="btn-add-tx-anak">+ Catat untuk ${escapeHtml(sis.nama_lengkap.split(' ')[0])}</button>
+            </div>
+          </div>
+
+          <div class="glass-card" style="padding:20px; margin-bottom:18px; background:linear-gradient(135deg, var(--leaf-700), var(--leaf-600)); color:#fff; border:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+              <div>
+                <div style="font-size:12px; opacity:0.85;">Buku Tabungan Siswa • No. Absen ${sis.no_urut || '-'}</div>
+                <h2 style="font-size:21px; font-weight:800; margin-top:3px;">${escapeHtml(sis.nama_lengkap)}</h2>
+                <div style="font-size:12.5px; opacity:0.9; margin-top:4px;">${escapeHtml(kls.nama_kelas)} • TP ${escapeHtml(tp.nama)}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:12px; opacity:0.85;">Total Saldo Akhir</div>
+                <div style="font-size:28px; font-weight:800;">${fmtRp(saldo)}</div>
+                <div style="font-size:11.5px; opacity:0.9;">Setor: ${fmtRp(totalSetor)} • Tarik: ${fmtRp(totalTarik)}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <div class="card-title">Riwayat Transaksi (${txSiswa.length})</div>
+              <span style="font-size:12px; color:var(--text-muted);">Klik tombol Edit atau Hapus pada baris mana pun</span>
+            </div>
+            <div class="card-body" style="padding:0;">
+              ${txSiswa.length === 0 ? `
+                <div class="empty-state">
+                  <h3>Belum Ada Catatan Tabungan</h3>
+                  <p>Siswa ini belum memiliki transaksi di TP ${escapeHtml(tp.nama)}.</p>
+                </div>
+              ` : `
+                <div class="table-wrap" style="border:none; border-radius:0;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Tanggal</th>
+                        <th>Jenis</th>
+                        <th>Keterangan</th>
+                        <th style="text-align:right;">Nominal</th>
+                        <th style="text-align:right;">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${txSiswa.map(tx => {
+                        const isTarik = tx.jenis === 'tarik';
+                        return `
+                          <tr>
+                            <td style="font-weight:700;">${tx.tanggal}</td>
+                            <td><span class="badge ${isTarik ? 'badge-red' : 'badge-green'}">${isTarik ? 'Penarikan' : 'Setoran'}</span></td>
+                            <td style="color:var(--text-muted);">${escapeHtml(tx.keterangan || '-')}</td>
+                            <td style="text-align:right; font-weight:800; color:${isTarik ? 'var(--danger)' : 'var(--leaf-700)'};">${isTarik ? '-' : '+'}${fmtRp(tx.nominal)}</td>
+                            <td style="text-align:right; white-space:nowrap;">
+                              <button class="btn btn-soft btn-sm" data-edit-tx="${tx.id}">Edit</button>
+                              <button class="btn btn-danger btn-sm" data-del-tx="${tx.id}">Hapus</button>
+                            </td>
+                          </tr>
+                        `;
+                      }).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+
+        document.getElementById('btn-back-anak').onclick = () => { state.selectedStudentId = null; renderPerAnak(container); };
+        document.getElementById('btn-add-tx-anak').onclick = () => openTxModal({ defaultSiswaId: sis.id });
+        container.querySelectorAll('[data-edit-tx]').forEach(btn => {
+          btn.onclick = () => {
+            const tx = state.transaksi.find(t => t.id === btn.dataset.editTx);
+            if (tx) openTxModal({ tx });
+          };
+        });
+        container.querySelectorAll('[data-del-tx]').forEach(btn => {
+          btn.onclick = () => confirmDeleteTx(btn.dataset.delTx);
+        });
+        return;
+      }
+
+      // Daftar semua siswa
+      const filtered = siswaList.filter(s => s.nama_lengkap.toLowerCase().includes(state.searchStudent.toLowerCase()));
+
+      container.innerHTML = `
+        <div class="glass-card" style="padding:14px 16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <input id="search-student-input" class="input" style="max-width:320px;" placeholder="🔍 Cari nama siswa..." value="${escapeHtml(state.searchStudent)}" />
+          <div style="font-size:13px; color:var(--text-muted); font-weight:600;">
+            Klik kartu siswa untuk melihat &amp; mengedit riwayat tabungan
+          </div>
+        </div>
+
+        ${filtered.length === 0 ? `
+          <div class="glass-card empty-state">
+            <div style="font-size:34px;">👥</div>
+            <h3>Belum Ada Siswa</h3>
+            <p>Tambahkan daftar siswa pada kelas ini melalui menu Kelola Data.</p>
+            <button class="btn btn-primary" id="btn-go-add-siswa">Tambah Siswa</button>
+          </div>
+        ` : `
+          <div class="student-grid">
+            ${filtered.map(s => {
+              const txs = txList.filter(t => t.siswa_id === s.id);
+              const saldo = txs.reduce((a, t) => a + signedNominal(t), 0);
+              return `
+                <div class="glass-card student-card" data-open-student="${s.id}">
+                  <div class="student-top">
+                    <div class="student-num">${s.no_urut || '-'}</div>
+                    <div style="min-width:0; flex:1;">
+                      <div class="student-name">${escapeHtml(s.nama_lengkap)}</div>
+                      <div style="font-size:11.5px; color:var(--text-muted);">${txs.length} transaksi tercatat</div>
+                    </div>
+                  </div>
+                  <div style="display:flex; align-items:flex-end; justify-content:space-between; padding-top:8px; border-top:1px dashed var(--border-glass);">
+                    <div>
+                      <div style="font-size:11px; color:var(--text-muted); font-weight:600;">Total Saldo</div>
+                      <div class="student-saldo">${fmtRp(saldo)}</div>
+                    </div>
+                    <button class="btn btn-soft btn-sm" data-quick-add-sis="${s.id}" type="button">+ Catat</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `}
+      `;
+
+      const searchEl = document.getElementById('search-student-input');
+      if (searchEl) {
+        searchEl.oninput = (e) => {
+          state.searchStudent = e.target.value;
+          renderPerAnak(container);
+          const nextEl = document.getElementById('search-student-input');
+          if (nextEl) { nextEl.focus(); nextEl.setSelectionRange(nextEl.value.length, nextEl.value.length); }
+        };
+      }
+      const goAdd = document.getElementById('btn-go-add-siswa');
+      if (goAdd) goAdd.onclick = () => { state.kelolaTab = 'siswa'; setView('kelola'); };
+
+      container.querySelectorAll('[data-open-student]').forEach(card => {
+        card.onclick = (e) => {
+          if (e.target.closest('[data-quick-add-sis]')) return;
+          state.selectedStudentId = card.dataset.openStudent;
+          renderPerAnak(container);
+        };
+      });
+      container.querySelectorAll('[data-quick-add-sis]').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          openTxModal({ defaultSiswaId: btn.dataset.quickAddSis });
+        };
+      });
+    }
+
+    // =====================================================================
+    // 3. VIEW: REKAP BULANAN (MATRIKS TANGGAL 1-31 INTERAKTIF)
+    // =====================================================================
+    function renderBulanan(container) {
+      const tp = getActiveTp();
+      const kls = getActiveKelas();
+      if (!tp || !kls) {
+        container.innerHTML = `<div class="glass-card empty-state"><h3>Belum Ada Kelas Terpilih</h3></div>`;
+        return;
+      }
+
+      const bObj = BULAN_TP[state.selectedMonthIdx] || BULAN_TP[0];
+      const year = Number(tp.tahun_mulai) + bObj.offsetYear;
+      const monthStr = String(bObj.month).padStart(2, '0');
+      const ymPrefix = `${year}-${monthStr}`;
+      const daysInMonth = new Date(year, bObj.month, 0).getDate();
+
+      const siswaList = getSiswaAktifKelas();
+      const txBulan = getTxAktifKelas().filter(t => (t.tanggal || '').startsWith(ymPrefix));
+
+      // Peta: cellMap[siswa_id][day] = { sum, list }
+      const cellMap = {};
+      const dayTotals = Array(daysInMonth + 1).fill(0);
+      let grandTotal = 0;
+
+      txBulan.forEach(tx => {
+        const d = Number((tx.tanggal || '').slice(8, 10));
+        if (!d || d < 1 || d > daysInMonth) return;
+        if (!cellMap[tx.siswa_id]) cellMap[tx.siswa_id] = {};
+        if (!cellMap[tx.siswa_id][d]) cellMap[tx.siswa_id][d] = { sum: 0, list: [] };
+        const val = signedNominal(tx);
+        cellMap[tx.siswa_id][d].sum += val;
+        cellMap[tx.siswa_id][d].list.push(tx);
+        dayTotals[d] += val;
+        grandTotal += val;
+      });
+
+      container.innerHTML = `
+        <div class="glass-card no-print" style="padding:14px 16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <label style="font-size:13px; font-weight:700; color:var(--leaf-900);">Pilih Bulan:</label>
+            <select id="bulanan-month-select" class="switcher-select">
+              ${BULAN_TP.map(b => {
+                const y = Number(tp.tahun_mulai) + b.offsetYear;
+                return `<option value="${b.idx}" ${b.idx === state.selectedMonthIdx ? 'selected' : ''}>${b.name} ${y}</option>`;
+              }).join('')}
+            </select>
+            <span class="badge badge-green">💡 Klik sel tanggal mana pun untuk isi / edit langsung</span>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button id="btn-export-bulanan" class="btn btn-soft btn-sm">📥 Export Excel</button>
+            <button id="btn-print-bulanan" class="btn btn-outline btn-sm">🖨️ Cetak / PDF</button>
+          </div>
+        </div>
+
+        <div class="glass-card" style="padding:16px;">
+          <div style="margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <h3 style="font-size:15px; font-weight:800; color:var(--leaf-900);">REKAP BULAN ${bObj.name.toUpperCase()} ${year}</h3>
+              <div style="font-size:12px; color:var(--text-muted);">${escapeHtml(kls.nama_kelas)} • ${escapeHtml(kls.nama_sekolah || '')}</div>
+            </div>
+            <div style="font-size:15px; font-weight:800; color:var(--leaf-700);">Total Bulan: ${fmtRp(grandTotal)}</div>
+          </div>
+
+          ${siswaList.length === 0 ? `
+            <div class="empty-state"><h3>Belum Ada Siswa di Kelas Ini</h3></div>
+          ` : `
+            <div class="table-wrap">
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th class="sticky-no">NO</th>
+                    <th class="sticky-name">NAMA SISWA</th>
+                    ${Array.from({ length: daysInMonth }, (_, i) => `<th>${i + 1}</th>`).join('')}
+                    <th>JUMLAH</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${siswaList.map((s, idx) => {
+                    let rowSum = 0;
+                    const cells = Array.from({ length: daysInMonth }, (_, i) => {
+                      const day = i + 1;
+                      const info = cellMap[s.id]?.[day];
+                      const val = info ? info.sum : 0;
+                      rowSum += val;
+                      const cls = val > 0 ? 'filled' : (val < 0 ? 'neg' : '');
+                      return `<td class="matrix-cell ${cls}" data-cell-sis="${s.id}" data-cell-day="${day}" title="Klik untuk edit (${s.nama_lengkap}, ${day} ${bObj.name} ${year})">${val !== 0 ? val.toLocaleString('id-ID') : ''}</td>`;
+                    }).join('');
+                    return `
+                      <tr>
+                        <td class="sticky-no">${s.no_urut || idx + 1}</td>
+                        <td class="sticky-name">${escapeHtml(s.nama_lengkap)}</td>
+                        ${cells}
+                        <td class="matrix-total-col">${fmtRp(rowSum)}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+                <tfoot>
+                  <tr class="matrix-foot">
+                    <td class="sticky-no"></td>
+                    <td class="sticky-name" style="background:var(--leaf-100);">TOTAL HARIAN</td>
+                    ${Array.from({ length: daysInMonth }, (_, i) => `<td>${dayTotals[i + 1] ? dayTotals[i + 1].toLocaleString('id-ID') : ''}</td>`).join('')}
+                    <td class="matrix-total-col">${fmtRp(grandTotal)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          `}
+        </div>
+      `;
+
+      document.getElementById('bulanan-month-select').onchange = (e) => {
+        state.selectedMonthIdx = Number(e.target.value);
+        renderBulanan(container);
+      };
+      document.getElementById('btn-print-bulanan').onclick = () => window.print();
+      document.getElementById('btn-export-bulanan').onclick = () => {
+        exportBulananExcel(kls, tp, bObj, year, daysInMonth, siswaList, cellMap);
+      };
+
+      // Klik sel matriks -> langsung buka modal edit/tambah untuk siswa & tanggal tersebut
+      container.querySelectorAll('.matrix-cell').forEach(td => {
+        td.onclick = () => {
+          const sisId = td.dataset.cellSis;
+          const day = String(td.dataset.cellDay).padStart(2, '0');
+          const isoDate = `${year}-${monthStr}-${day}`;
+          const existing = cellMap[sisId]?.[Number(td.dataset.cellDay)]?.list || [];
+          if (existing.length === 1) {
+            openTxModal({ tx: existing[0] });
+          } else if (existing.length > 1) {
+            openDayMultiTxModal(sisId, isoDate, existing);
+          } else {
+            openTxModal({ defaultSiswaId: sisId, defaultDate: isoDate });
+          }
+        };
+      });
+    }
+
+    // =====================================================================
+    // 4. VIEW: REKAP TAHUNAN (JULI - JUNI INTERAKTIF)
+    // =====================================================================
+    function renderTahunan(container) {
+      const tp = getActiveTp();
+      const kls = getActiveKelas();
+      if (!tp || !kls) {
+        container.innerHTML = `<div class="glass-card empty-state"><h3>Belum Ada Kelas Terpilih</h3></div>`;
+        return;
+      }
+
+      const siswaList = getSiswaAktifKelas();
+      const txList = getTxAktifKelas();
+      const monthTotals = Array(12).fill(0);
+      let grandTotal = 0;
+
+      // matrix[siswa_id][monthIdx] = sum
+      const matrix = {};
+      siswaList.forEach(s => { matrix[s.id] = Array(12).fill(0); });
+
+      txList.forEach(tx => {
+        const ym = (tx.tanggal || '').slice(0, 7);
+        const mIdx = BULAN_TP.findIndex(b => {
+          const y = Number(tp.tahun_mulai) + b.offsetYear;
+          return `${y}-${String(b.month).padStart(2, '0')}` === ym;
+        });
+        if (mIdx >= 0 && matrix[tx.siswa_id]) {
+          const val = signedNominal(tx);
+          matrix[tx.siswa_id][mIdx] += val;
+          monthTotals[mIdx] += val;
+          grandTotal += val;
+        }
+      });
+
+      container.innerHTML = `
+        <div class="glass-card no-print" style="padding:14px 16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <span class="badge badge-green">💡 Klik nominal di bulan mana pun untuk melihat &amp; mengedit transaksi bulan tersebut</span>
+          <div style="display:flex; gap:8px;">
+            <button id="btn-export-tahunan" class="btn btn-soft btn-sm">📥 Export Excel Tahunan</button>
+            <button id="btn-print-tahunan" class="btn btn-outline btn-sm">🖨️ Cetak / PDF</button>
+          </div>
+        </div>
+
+        <div class="glass-card" style="padding:16px;">
+          <div style="margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <h3 style="font-size:15px; font-weight:800; color:var(--leaf-900);">REKAP TAHUNAN TP ${escapeHtml(tp.nama)} (JULI ${tp.tahun_mulai} – JUNI ${Number(tp.tahun_mulai) + 1})</h3>
+              <div style="font-size:12px; color:var(--text-muted);">${escapeHtml(kls.nama_kelas)} • ${escapeHtml(kls.nama_sekolah || '')}</div>
+            </div>
+            <div style="font-size:16px; font-weight:800; color:var(--leaf-700);">Grand Total: ${fmtRp(grandTotal)}</div>
+          </div>
+
+          ${siswaList.length === 0 ? `
+            <div class="empty-state"><h3>Belum Ada Siswa di Kelas Ini</h3></div>
+          ` : `
+            <div class="table-wrap">
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th class="sticky-no">NO</th>
+                    <th class="sticky-name">NAMA SISWA</th>
+                    ${BULAN_TP.map(b => `<th>${b.short}</th>`).join('')}
+                    <th>TOTAL TAHUNAN</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${siswaList.map((s, idx) => {
+                    const rowSum = matrix[s.id].reduce((a, b) => a + b, 0);
+                    return `
+                      <tr>
+                        <td class="sticky-no">${s.no_urut || idx + 1}</td>
+                        <td class="sticky-name">${escapeHtml(s.nama_lengkap)}</td>
+                        ${matrix[s.id].map((val, mIdx) => {
+                          const cls = val > 0 ? 'filled' : (val < 0 ? 'neg' : '');
+                          return `<td class="matrix-cell ${cls}" data-yr-sis="${s.id}" data-yr-midx="${mIdx}">${val !== 0 ? val.toLocaleString('id-ID') : ''}</td>`;
+                        }).join('')}
+                        <td class="matrix-total-col">${fmtRp(rowSum)}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+                <tfoot>
+                  <tr class="matrix-foot">
+                    <td class="sticky-no"></td>
+                    <td class="sticky-name" style="background:var(--leaf-100);">TOTAL KELAS</td>
+                    ${monthTotals.map(v => `<td>${v ? v.toLocaleString('id-ID') : '0'}</td>`).join('')}
+                    <td class="matrix-total-col">${fmtRp(grandTotal)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          `}
+        </div>
+      `;
+
+      document.getElementById('btn-print-tahunan').onclick = () => window.print();
+      document.getElementById('btn-export-tahunan').onclick = () => exportTahunanExcel(kls, tp, siswaList, matrix);
+
+      container.querySelectorAll('[data-yr-sis]').forEach(td => {
+        td.onclick = () => {
+          openMonthStudentTxModal(td.dataset.yrSis, Number(td.dataset.yrMidx));
+        };
+      });
+    }
+
+    // =====================================================================
+    // 5. VIEW: KELOLA DATA (SISWA, KELAS, TAHUN PELAJARAN, NAIK KELAS & PWA)
+    // =====================================================================
+    function renderKelola(container) {
+      const tp = getActiveTp();
+      const kls = getActiveKelas();
+      const siswaList = getSiswaAktifKelas();
+      const kelasDiTp = getKelasByTp(state.activeTpId);
+
+      container.innerHTML = `
+        <div class="sub-tabs">
+          <button class="sub-tab ${state.kelolaTab === 'siswa' ? 'active' : ''}" data-ktab="siswa">👥 Data Siswa</button>
+          <button class="sub-tab ${state.kelolaTab === 'import_tx' ? 'active' : ''}" data-ktab="import_tx">📥 Import Tabungan</button>
+          <button class="sub-tab ${state.kelolaTab === 'kelas' ? 'active' : ''}" data-ktab="kelas">🏫 Kelas</button>
+          <button class="sub-tab ${state.kelolaTab === 'tp' ? 'active' : ''}" data-ktab="tp">📆 Tahun Pelajaran</button>
+          <button class="sub-tab ${state.kelolaTab === 'pwa' ? 'active' : ''}" data-ktab="pwa">📲 Install di HP</button>
+        </div>
+        <div id="kelola-panel"></div>
+      `;
+
+      container.querySelectorAll('[data-ktab]').forEach(btn => {
+        btn.onclick = () => { state.kelolaTab = btn.dataset.ktab; renderKelola(container); };
+      });
+
+      const panel = document.getElementById('kelola-panel');
+
+      if (state.kelolaTab === 'siswa') {
+        panel.innerHTML = `
+          <div class="glass-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Daftar Siswa — ${escapeHtml(kls?.nama_kelas || 'Belum ada kelas')}</div>
+                <div style="font-size:12px; color:var(--text-muted);">Kelola siswa, unduh template Excel, impor data, atau salin ke kelas/tahun ajaran baru</div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-outline btn-sm" id="btn-template-siswa">📄 Template Excel Siswa</button>
+                <button class="btn btn-outline btn-sm" id="btn-import-excel" ${!kls ? 'disabled' : ''}>📤 Import Excel</button>
+                <button class="btn btn-soft btn-sm" id="btn-salin-siswa" ${!siswaList.length ? 'disabled' : ''}>🚀 Naik Kelas / Salin</button>
+                <button class="btn btn-primary btn-sm" id="btn-add-siswa" ${!kls ? 'disabled' : ''}>+ Tambah Siswa</button>
+              </div>
+              <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" style="display:none;" />
+            </div>
+            <div class="card-body" style="padding:0;">
+              ${siswaList.length === 0 ? `
+                <div class="empty-state">
+                  <h3>Belum Ada Siswa di Kelas Ini</h3>
+                  <p>Tambahkan siswa satu per satu atau impor langsung dari file Excel daftar siswa Anda.</p>
+                </div>
+              ` : `
+                <div class="table-wrap" style="border:none; border-radius:0;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th style="width:70px;">No Urut</th>
+                        <th>Nama Lengkap Siswa</th>
+                        <th style="text-align:right;">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${siswaList.map(s => `
+                        <tr>
+                          <td style="font-weight:700;">${s.no_urut || '-'}</td>
+                          <td style="font-weight:700;">${escapeHtml(s.nama_lengkap)}</td>
+                          <td style="text-align:right; white-space:nowrap;">
+                            <button class="btn btn-soft btn-sm" data-edit-sis="${s.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm" data-del-sis="${s.id}">Hapus</button>
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+
+        document.getElementById('btn-add-siswa').onclick = () => openSiswaModal();
+        document.getElementById('btn-salin-siswa').onclick = () => openSalinSiswaModal();
+        document.getElementById('btn-template-siswa').onclick = () => downloadTemplateSiswaExcel(kls);
+        document.getElementById('btn-import-excel').onclick = () => document.getElementById('excel-file-input').click();
+        document.getElementById('excel-file-input').onchange = handleImportExcelSiswa;
+
+        panel.querySelectorAll('[data-edit-sis]').forEach(b => {
+          b.onclick = () => openSiswaModal(state.siswa.find(s => s.id === b.dataset.editSis));
+        });
+        panel.querySelectorAll('[data-del-sis]').forEach(b => {
+          b.onclick = () => {
+            const s = state.siswa.find(x => x.id === b.dataset.delSis);
+            openConfirmModal('Hapus Siswa?', `Menghapus "${s?.nama_lengkap}" juga akan menghapus seluruh riwayat tabungannya di kelas ini.`, async () => {
+              await dbDelete('siswa', s.id);
+              showToast('Siswa berhasil dihapus');
+              await loadAllData();
+            });
+          };
+        });
+      } else if (state.kelolaTab === 'import_tx') {
+        if (!tp || !kls) {
+          panel.innerHTML = `<div class="glass-card empty-state"><h3>Pilih Tahun Pelajaran &amp; Kelas Terlebih Dahulu</h3><p>Buat Tahun Pelajaran dan Kelas sebelum mengimpor data tabungan.</p></div>`;
+          return;
+        }
+        const bSel = BULAN_TP[state.importMonthIdx] || BULAN_TP[0];
+        const yearSel = Number(tp.tahun_mulai) + bSel.offsetYear;
+        const draft = state.importDraft;
+
+        panel.innerHTML = `
+          <div class="glass-card" style="padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+              <div>
+                <div class="card-title">📥 Impor Data Tabungan dari Excel</div>
+                <div style="font-size:12.5px; color:var(--text-muted); margin-top:3px;">
+                  Target aktif: <strong>${escapeHtml(kls.nama_kelas)}</strong> • <strong>TP ${escapeHtml(tp.nama)}</strong>
+                </div>
+              </div>
+              <span class="badge badge-green">Anti Input Ulang</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-bottom:18px;">
+              <div style="padding:16px; border-radius:14px; background:var(--leaf-50); border:1.5px solid ${state.importMode === 'bulanan' ? 'var(--leaf-600)' : 'var(--border-glass)'};">
+                <label style="display:flex; align-items:center; gap:8px; font-weight:800; font-size:13.5px; color:var(--leaf-900); cursor:pointer;">
+                  <input type="radio" name="imp-mode" value="bulanan" ${state.importMode === 'bulanan' ? 'checked' : ''} />
+                  1. Format Harian Per Bulan (Tanggal 1–31)
+                </label>
+                <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px; line-height:1.5;">
+                  Cocok jika Anda sudah punya catatan tanggal 1 s.d. 31 per bulan. Pilih bulan target, unduh template, lalu unggah.
+                </p>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                  <select id="imp-month-select" class="switcher-select" style="flex:1; min-width:130px;">
+                    ${BULAN_TP.map(b => {
+                      const y = Number(tp.tahun_mulai) + b.offsetYear;
+                      return `<option value="${b.idx}" ${b.idx === state.importMonthIdx ? 'selected' : ''}>${b.name} ${y}</option>`;
+                    }).join('')}
+                  </select>
+                  <button type="button" class="btn btn-soft btn-sm" id="btn-tpl-tx-bulanan">📄 Template 1–31</button>
+                </div>
+              </div>
+
+              <div style="padding:16px; border-radius:14px; background:var(--leaf-50); border:1.5px solid ${state.importMode === 'rekap_perbulan' ? 'var(--leaf-600)' : 'var(--border-glass)'};">
+                <label style="display:flex; align-items:center; gap:8px; font-weight:800; font-size:13.5px; color:var(--leaf-900); cursor:pointer;">
+                  <input type="radio" name="imp-mode" value="rekap_perbulan" ${state.importMode === 'rekap_perbulan' ? 'checked' : ''} />
+                  2. Format Rekap Total Per Bulan (Jul–Jun)
+                </label>
+                <p style="font-size:12px; color:var(--text-muted); margin:6px 0 12px; line-height:1.5;">
+                  Cocok jika Anda sudah punya total tabungan anak per bulan (kolom Juli s.d. Juni) dalam 1 sheet Excel.
+                </p>
+                <button type="button" class="btn btn-soft btn-sm" id="btn-tpl-tx-rekap">📄 Template Rekap Jul–Jun</button>
+              </div>
+            </div>
+
+            <div style="padding:16px; border-radius:14px; border:1px dashed var(--leaf-500); background:rgba(255,255,255,0.85); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+              <div>
+                <div style="font-size:13.5px; font-weight:800; color:var(--leaf-900);">
+                  Unggah File Excel (${state.importMode === 'bulanan' ? `Harian ${bSel.name} ${yearSel}` : `Rekap Per Bulan TP ${tp.nama}`})
+                </div>
+                <label style="display:inline-flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); margin-top:5px; cursor:pointer;">
+                  <input type="checkbox" id="imp-auto-add-siswa" checked />
+                  Otomatis daftarkan siswa baru jika namanya belum ada di kelas ini
+                </label>
+              </div>
+              <div>
+                <button type="button" class="btn btn-primary btn-sm" id="btn-pick-tx-excel">📤 Pilih File Excel (.xlsx)</button>
+                <input type="file" id="tx-excel-input" accept=".xlsx,.xls,.csv" style="display:none;" />
+              </div>
+            </div>
+
+            ${draft ? `
+              <div style="margin-top:18px; padding:16px; border-radius:14px; background:#fff; border:1px solid var(--border-glass);">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+                  <div>
+                    <div style="font-size:14px; font-weight:800; color:var(--leaf-900);">Pratinjau Data Siap Impor (${escapeHtml(draft.fileName)})</div>
+                    <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+                      <strong>${draft.entries.length}</strong> transaksi terbaca •
+                      <strong>${draft.newStudents.length}</strong> siswa baru akan ditambahkan •
+                      Total Nominal: <strong style="color:var(--leaf-700);">${fmtRp(draft.totalNominal)}</strong>
+                    </div>
+                  </div>
+                  <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn btn-outline btn-sm" id="btn-cancel-imp-tx">Batal</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="btn-commit-imp-tx">✅ Simpan &amp; Impor Sekarang</button>
+                  </div>
+                </div>
+                <div class="table-wrap" style="max-height:260px; overflow-y:auto;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Nama Siswa</th>
+                        <th>Status Siswa</th>
+                        <th>Tanggal</th>
+                        <th>Jenis</th>
+                        <th style="text-align:right;">Nominal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${draft.entries.slice(0, 60).map(it => `
+                        <tr>
+                          <td style="font-weight:700;">${escapeHtml(it.nama_lengkap)}</td>
+                          <td>${it.isNewStudent ? '<span class="badge badge-green">Siswa Baru</span>' : '<span class="badge badge-gray">Terdaftar</span>'}</td>
+                          <td>${it.tanggal}</td>
+                          <td><span class="badge ${it.jenis === 'tarik' ? 'badge-red' : 'badge-green'}">${it.jenis === 'tarik' ? 'Penarikan' : 'Setoran'}</span></td>
+                          <td style="text-align:right; font-weight:700;">${fmtRp(it.nominal)}</td>
+                        </tr>
+                      `).join('')}
+                      ${draft.entries.length > 60 ? `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); font-size:12px;">... dan ${draft.entries.length - 60} transaksi lainnya</td></tr>` : ''}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+        panel.querySelectorAll('input[name="imp-mode"]').forEach(radio => {
+          radio.onchange = (e) => {
+            state.importMode = e.target.value;
+            state.importDraft = null;
+            renderKelola(container);
+          };
+        });
+        document.getElementById('imp-month-select').onchange = (e) => {
+          state.importMonthIdx = Number(e.target.value);
+          state.importDraft = null;
+          renderKelola(container);
+        };
+        document.getElementById('btn-tpl-tx-bulanan').onclick = () => downloadTemplateTabunganBulanan(kls, tp, bSel, yearSel, siswaList);
+        document.getElementById('btn-tpl-tx-rekap').onclick = () => downloadTemplateTabunganRekap(kls, tp, siswaList);
+        document.getElementById('btn-pick-tx-excel').onclick = () => document.getElementById('tx-excel-input').click();
+        document.getElementById('tx-excel-input').onchange = (e) => handleParseExcelTabungan(e, tp, siswaList, container);
+
+        if (draft) {
+          document.getElementById('btn-cancel-imp-tx').onclick = () => {
+            state.importDraft = null;
+            renderKelola(container);
+          };
+          document.getElementById('btn-commit-imp-tx').onclick = () => commitImportTabungan(container);
+        }
+      } else if (state.kelolaTab === 'kelas') {
+        panel.innerHTML = `
+          <div class="glass-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Daftar Kelas — TP ${escapeHtml(tp?.nama || '-')}</div>
+                <div style="font-size:12px; color:var(--text-muted);">Anda bisa membuat banyak kelas dalam satu Tahun Pelajaran</div>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btn-add-kelas" ${!tp ? 'disabled' : ''}>+ Tambah Kelas</button>
+            </div>
+            <div class="card-body" style="padding:0;">
+              ${kelasDiTp.length === 0 ? `
+                <div class="empty-state"><h3>Belum Ada Kelas</h3><p>Tambahkan kelas pertama pada Tahun Pelajaran ini.</p></div>
+              ` : `
+                <div class="table-wrap" style="border:none; border-radius:0;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Nama Kelas</th>
+                        <th>Nama Sekolah</th>
+                        <th>Wali Kelas</th>
+                        <th style="text-align:right;">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${kelasDiTp.map(k => `
+                        <tr>
+                          <td style="font-weight:800; color:var(--leaf-800);">${escapeHtml(k.nama_kelas)}</td>
+                          <td>${escapeHtml(k.nama_sekolah || '-')}</td>
+                          <td>${escapeHtml(k.wali_kelas || '-')}</td>
+                          <td style="text-align:right; white-space:nowrap;">
+                            <button class="btn btn-soft btn-sm" data-edit-kls="${k.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm" data-del-kls="${k.id}">Hapus</button>
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+        document.getElementById('btn-add-kelas').onclick = () => openKelasModal();
+        panel.querySelectorAll('[data-edit-kls]').forEach(b => {
+          b.onclick = () => openKelasModal(state.kelas.find(k => k.id === b.dataset.editKls));
+        });
+        panel.querySelectorAll('[data-del-kls]').forEach(b => {
+          b.onclick = () => {
+            const k = state.kelas.find(x => x.id === b.dataset.delKls);
+            openConfirmModal('Hapus Kelas?', `Menghapus "${k?.nama_kelas}" akan menghapus semua siswa dan transaksi di dalamnya.`, async () => {
+              await dbDelete('kelas', k.id);
+              showToast('Kelas dihapus');
+              await loadAllData();
+            });
+          };
+        });
+      } else if (state.kelolaTab === 'tp') {
+        panel.innerHTML = `
+          <div class="glass-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Daftar Tahun Pelajaran (Multi-Tahun Selamanya)</div>
+                <div style="font-size:12px; color:var(--text-muted);">Arsip tahun sebelumnya tetap tersimpan aman dan bisa dibuka kapan saja</div>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btn-add-tp">+ Tambah Tahun Pelajaran</button>
+            </div>
+            <div class="card-body" style="padding:0;">
+              ${state.tahunPelajaran.length === 0 ? `
+                <div class="empty-state"><h3>Belum Ada Tahun Pelajaran</h3></div>
+              ` : `
+                <div class="table-wrap" style="border:none; border-radius:0;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Tahun Pelajaran</th>
+                        <th>Rentang Rekap</th>
+                        <th>Status</th>
+                        <th style="text-align:right;">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${state.tahunPelajaran.map(t => `
+                        <tr>
+                          <td style="font-weight:800;">TP ${escapeHtml(t.nama)}</td>
+                          <td style="color:var(--text-muted);">Juli ${t.tahun_mulai} – Juni ${Number(t.tahun_mulai) + 1}</td>
+                          <td>${t.is_aktif ? '<span class="badge badge-green">Aktif</span>' : '<span class="badge badge-gray">Arsip</span>'}</td>
+                          <td style="text-align:right; white-space:nowrap;">
+                            ${!t.is_aktif ? `<button class="btn btn-outline btn-sm" data-set-aktif="${t.id}">Jadikan Aktif</button>` : ''}
+                            <button class="btn btn-soft btn-sm" data-edit-tp="${t.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm" data-del-tp="${t.id}">Hapus</button>
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+        document.getElementById('btn-add-tp').onclick = () => openTpModal();
+        panel.querySelectorAll('[data-edit-tp]').forEach(b => {
+          b.onclick = () => openTpModal(state.tahunPelajaran.find(t => t.id === b.dataset.editTp));
+        });
+        panel.querySelectorAll('[data-set-aktif]').forEach(b => {
+          b.onclick = async () => {
+            try {
+              for (const t of state.tahunPelajaran) {
+                if (t.is_aktif && t.id !== b.dataset.setAktif) await dbUpdate('tahun_pelajaran', t.id, { is_aktif: false });
+              }
+              await dbUpdate('tahun_pelajaran', b.dataset.setAktif, { is_aktif: true });
+              state.activeTpId = b.dataset.setAktif;
+              showToast('Tahun Pelajaran aktif diperbarui');
+              await loadAllData();
+            } catch (err) { showToast(err.message, true); }
+          };
+        });
+        panel.querySelectorAll('[data-del-tp]').forEach(b => {
+          b.onclick = () => {
+            const t = state.tahunPelajaran.find(x => x.id === b.dataset.delTp);
+            openConfirmModal('Hapus Tahun Pelajaran?', `Semua kelas, siswa, dan transaksi di TP ${t?.nama} akan ikut terhapus permanen.`, async () => {
+              await dbDelete('tahun_pelajaran', t.id);
+              showToast('Tahun Pelajaran dihapus');
+              await loadAllData();
+            });
+          };
+        });
+      } else if (state.kelolaTab === 'pwa') {
+        panel.innerHTML = `
+          <div class="glass-card" style="padding:24px; max-width:620px;">
+            <h3 style="font-size:17px; font-weight:800; color:var(--leaf-900); margin-bottom:8px;">📲 Pasang SiTabung di Layar Utama HP</h3>
+            <p style="font-size:13.5px; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+              Aplikasi ini sudah mendukung teknologi <strong>PWA (Progressive Web App)</strong> sehingga dapat diinstal langsung ke HP Android maupun iPhone tanpa perlu Play Store / App Store.
+            </p>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px; font-size:13px; color:var(--text-main);">
+              <div style="padding:12px; border-radius:12px; background:var(--leaf-50); border:1px solid var(--border-glass);">
+                <strong>Android (Chrome):</strong> Klik tombol <em>"Install Sekarang"</em> di bawah, atau ketuk menu titik tiga (⋮) di pojok kanan atas browser → pilih <strong>"Tambahkan ke layar utama / Install App"</strong>.
+              </div>
+              <div style="padding:12px; border-radius:12px; background:var(--leaf-50); border:1px solid var(--border-glass);">
+                <strong>iPhone / iPad (Safari):</strong> Ketuk ikon <strong>Bagikan (Share)</strong> di bagian bawah → pilih <strong>"Tambah ke Layar Utama (Add to Home Screen)"</strong>.
+              </div>
+            </div>
+            <button id="btn-install-pwa-main" class="btn btn-primary" ${deferredPrompt ? '' : 'disabled'}>
+              ${deferredPrompt ? '📲 Install Aplikasi Sekarang' : '✓ Gunakan Menu Browser untuk Install'}
+            </button>
+          </div>
+        `;
+        const installBtn = document.getElementById('btn-install-pwa-main');
+        if (installBtn && deferredPrompt) {
+          installBtn.onclick = triggerInstallPWA;
+        }
+      }
+    }
+
+    async function triggerInstallPWA() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') showToast('Aplikasi sedang dipasang ke perangkat Anda!');
+      deferredPrompt = null;
+      const btnSide = document.getElementById('btn-install-sidebar');
+      if (btnSide) btnSide.style.display = 'none';
+      if (state.view === 'kelola') renderCurrentView();
+    }
+
+    // =====================================================================
+    // MODALS: TRANSAKSI SATUAN, MASSAL HARIAN, MULTI-TX, SISWA, KELAS, TP
+    // =====================================================================
+    function openTxModal({ tx = null, defaultSiswaId = null, defaultDate = null } = {}) {
+      const siswaList = getSiswaAktifKelas();
+      if (!siswaList.length) {
+        showToast('Tambahkan siswa terlebih dahulu di menu Kelola Data', true);
+        return;
+      }
+
+      const isEdit = !!tx;
+      const selSisId = tx ? tx.siswa_id : (defaultSiswaId || siswaList[0].id);
+      const selDate = tx ? tx.tanggal : (defaultDate || todayISO());
+      const selJenis = tx ? tx.jenis : 'setor';
+      const selNominal = tx ? tx.nominal : '';
+      const selKet = tx ? (tx.keterangan || '') : '';
+
+      openModal({
+        title: isEdit ? 'Edit Catatan Tabungan' : 'Catat Tabungan Baru',
+        bodyHtml: `
+          <form id="tx-form">
+            <div class="form-group" style="margin-top:0;">
+              <label class="field-label">Nama Siswa</label>
+              <select id="tx-siswa" class="select" required>
+                ${siswaList.map(s => `<option value="${s.id}" ${s.id === selSisId ? 'selected' : ''}>${s.no_urut ? s.no_urut + '. ' : ''}${escapeHtml(s.nama_lengkap)}</option>`).join('')}
+              </select>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;" class="form-group">
+              <div>
+                <label class="field-label">Tanggal</label>
+                <input id="tx-tanggal" type="date" class="input" value="${selDate}" required />
+              </div>
+              <div>
+                <label class="field-label">Jenis Transaksi</label>
+                <select id="tx-jenis" class="select">
+                  <option value="setor" ${selJenis === 'setor' ? 'selected' : ''}>Setoran (+)</option>
+                  <option value="tarik" ${selJenis === 'tarik' ? 'selected' : ''}>Penarikan (−)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="field-label">Nominal (Rp)</label>
+              <input id="tx-nominal" type="number" min="500" step="500" class="input" placeholder="Contoh: 10000" value="${selNominal}" required />
+              <div class="nominal-chips">
+                ${[2000, 5000, 10000, 20000, 50000, 100000].map(n => `<button type="button" class="chip-btn" data-chip="${n}">${(n/1000)}rb</button>`).join('')}
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="field-label">Keterangan (Opsional)</label>
+              <input id="tx-ket" type="text" class="input" placeholder="Misal: Tabungan rutin" value="${escapeHtml(selKet)}" />
+            </div>
+          </form>
+        `,
+        footHtml: `
+          ${isEdit ? `<button type="button" class="btn btn-danger" id="tx-del-btn" style="margin-right:auto;">Hapus</button>` : ''}
+          <button type="button" class="btn btn-outline" id="tx-cancel-btn">Batal</button>
+          <button type="button" class="btn btn-primary" id="tx-save-btn">${isEdit ? 'Simpan Perubahan' : 'Simpan Tabungan'}</button>
+        `
+      });
+
+      document.querySelectorAll('[data-chip]').forEach(btn => {
+        btn.onclick = () => { document.getElementById('tx-nominal').value = btn.dataset.chip; };
+      });
+      document.getElementById('tx-cancel-btn').onclick = closeModal;
+      if (isEdit) {
+        document.getElementById('tx-del-btn').onclick = () => confirmDeleteTx(tx.id);
+      }
+      document.getElementById('tx-save-btn').onclick = async () => {
+        const siswa_id = document.getElementById('tx-siswa').value;
+        const tanggal = document.getElementById('tx-tanggal').value;
+        const jenis = document.getElementById('tx-jenis').value;
+        const nominal = Number(document.getElementById('tx-nominal').value);
+        const keterangan = document.getElementById('tx-ket').value.trim();
+
+        if (!siswa_id || !tanggal || !nominal || nominal <= 0) {
+          showToast('Lengkapi siswa, tanggal, dan nominal dengan benar', true);
+          return;
+        }
+        const btn = document.getElementById('tx-save-btn');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
+        try {
+          if (isEdit) {
+            await dbUpdate('transaksi_tabungan', tx.id, { siswa_id, tanggal, jenis, nominal, keterangan, updated_at: new Date().toISOString() });
+            showToast('Transaksi berhasil diperbarui');
+          } else {
+            await dbInsert('transaksi_tabungan', { siswa_id, kelas_id: state.activeKelasId, tanggal, jenis, nominal, keterangan });
+            showToast('Tabungan berhasil dicatat');
+          }
+          closeModal();
+          await loadAllData();
+        } catch (err) {
+          showToast(err.message || 'Gagal menyimpan transaksi', true);
+          btn.disabled = false;
+          btn.textContent = isEdit ? 'Simpan Perubahan' : 'Simpan Tabungan';
+        }
+      };
+    }
+
+    function openMassalModal() {
+      const siswaList = getSiswaAktifKelas();
+      if (!siswaList.length) {
+        showToast('Tambahkan siswa terlebih dahulu di menu Kelola Data', true);
+        return;
+      }
+
+      openModal({
+        title: 'Catat Tabungan Massal Harian',
+        wide: true,
+        bodyHtml: `
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:160px;">
+              <label class="field-label">Tanggal Setoran</label>
+              <input id="massal-date" type="date" class="input" value="${todayISO()}" />
+            </div>
+            <div style="flex:1; min-width:160px;">
+              <label class="field-label">Keterangan Default</label>
+              <input id="massal-ket" type="text" class="input" placeholder="Misal: Tabungan harian" />
+            </div>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Isi nominal hanya pada siswa yang menabung hari ini (biarkan kosong jika tidak menabung):</p>
+          <div class="table-wrap" style="max-height:46vh; overflow-y:auto;">
+            <table class="data-table">
+              <thead><tr><th style="width:45px;">No</th><th>Nama Siswa</th><th style="width:180px;">Nominal (Rp)</th></tr></thead>
+              <tbody>
+                ${siswaList.map((s, i) => `
+                  <tr>
+                    <td>${s.no_urut || i + 1}</td>
+                    <td style="font-weight:700;">${escapeHtml(s.nama_lengkap)}</td>
+                    <td><input type="number" min="0" step="500" class="input massal-input" data-sis-id="${s.id}" placeholder="0" style="padding:7px 10px;" /></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="massal-cancel">Batal</button>
+          <button type="button" class="btn btn-primary" id="massal-save">Simpan Semua Setoran</button>
+        `
+      });
+
+      document.getElementById('massal-cancel').onclick = closeModal;
+      document.getElementById('massal-save').onclick = async () => {
+        const tanggal = document.getElementById('massal-date').value;
+        const keterangan = document.getElementById('massal-ket').value.trim();
+        const rows = [];
+        document.querySelectorAll('.massal-input').forEach(inp => {
+          const val = Number(inp.value);
+          if (val > 0) {
+            rows.push({
+              siswa_id: inp.dataset.sisId,
+              kelas_id: state.activeKelasId,
+              tanggal,
+              jenis: 'setor',
+              nominal: val,
+              keterangan
+            });
+          }
+        });
+        if (!rows.length) {
+          showToast('Isi minimal satu nominal siswa terlebih dahulu', true);
+          return;
+        }
+        const btn = document.getElementById('massal-save');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
+        try {
+          await dbInsert('transaksi_tabungan', rows);
+          showToast(`${rows.length} setoran berhasil dicatat sekaligus!`);
+          closeModal();
+          await loadAllData();
+        } catch (err) {
+          showToast(err.message || 'Gagal menyimpan', true);
+          btn.disabled = false;
+          btn.textContent = 'Simpan Semua Setoran';
+        }
+      };
+    }
+
+    function openDayMultiTxModal(sisId, isoDate, txList) {
+      const sis = state.siswa.find(s => s.id === sisId);
+      openModal({
+        title: `Transaksi ${sis?.nama_lengkap || ''} (${isoDate})`,
+        bodyHtml: `
+          <div class="tx-list">
+            ${txList.map(tx => `
+              <div class="tx-row" data-pick-tx="${tx.id}">
+                <div>
+                  <div class="tx-name">${tx.jenis === 'tarik' ? 'Penarikan' : 'Setoran'} • ${fmtRp(tx.nominal)}</div>
+                  <div class="tx-meta">${escapeHtml(tx.keterangan || 'Tanpa keterangan')}</div>
+                </div>
+                <span class="badge badge-green">Edit</span>
+              </div>
+            `).join('')}
+          </div>
+        `,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="multi-close">Tutup</button>
+          <button type="button" class="btn btn-primary" id="multi-add">+ Tambah Lagi di Tanggal Ini</button>
+        `
+      });
+      document.getElementById('multi-close').onclick = closeModal;
+      document.getElementById('multi-add').onclick = () => openTxModal({ defaultSiswaId: sisId, defaultDate: isoDate });
+      document.querySelectorAll('[data-pick-tx]').forEach(el => {
+        el.onclick = () => {
+          const tx = state.transaksi.find(t => t.id === el.dataset.pickTx);
+          if (tx) openTxModal({ tx });
+        };
+      });
+    }
+
+    function openMonthStudentTxModal(sisId, monthIdx) {
+      const tp = getActiveTp();
+      const bObj = BULAN_TP[monthIdx];
+      const year = Number(tp.tahun_mulai) + bObj.offsetYear;
+      const ym = `${year}-${String(bObj.month).padStart(2, '0')}`;
+      const sis = state.siswa.find(s => s.id === sisId);
+      const list = getTxAktifKelas()
+        .filter(t => t.siswa_id === sisId && (t.tanggal || '').startsWith(ym))
+        .sort((a, b) => (a.tanggal || '').localeCompare(b.tanggal || ''));
+
+      openModal({
+        title: `${sis?.nama_lengkap || ''} — ${bObj.name} ${year}`,
+        bodyHtml: list.length === 0 ? `
+          <p style="font-size:13.5px; color:var(--text-muted); text-align:center; padding:16px 0;">Belum ada transaksi pada bulan ${bObj.name} ${year}.</p>
+        ` : `
+          <div class="tx-list">
+            ${list.map(tx => `
+              <div class="tx-row" data-m-edit="${tx.id}">
+                <div>
+                  <div class="tx-name">${tx.tanggal} • ${tx.jenis === 'tarik' ? 'Penarikan' : 'Setoran'}</div>
+                  <div class="tx-meta">${escapeHtml(tx.keterangan || '-')}</div>
+                </div>
+                <div class="tx-amount ${tx.jenis === 'tarik' ? 'tarik' : 'setor'}">${tx.jenis === 'tarik' ? '-' : '+'}${fmtRp(tx.nominal)}</div>
+              </div>
+            `).join('')}
+          </div>
+        `,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="ms-close">Tutup</button>
+          <button type="button" class="btn btn-primary" id="ms-add">+ Tambah di ${bObj.name}</button>
+        `
+      });
+      document.getElementById('ms-close').onclick = closeModal;
+      document.getElementById('ms-add').onclick = () => openTxModal({ defaultSiswaId: sisId, defaultDate: `${ym}-01` });
+      document.querySelectorAll('[data-m-edit]').forEach(el => {
+        el.onclick = () => {
+          const tx = state.transaksi.find(t => t.id === el.dataset.mEdit);
+          if (tx) openTxModal({ tx });
+        };
+      });
+    }
+
+    function confirmDeleteTx(txId) {
+      openConfirmModal('Hapus Transaksi?', 'Data transaksi tabungan ini akan dihapus permanen dari semua rekap.', async () => {
+        await dbDelete('transaksi_tabungan', txId);
+        showToast('Transaksi dihapus');
+        await loadAllData();
+      });
+    }
+
+    function openSiswaModal(sis = null) {
+      const isEdit = !!sis;
+      const nextNo = getSiswaAktifKelas().length + 1;
+      openModal({
+        title: isEdit ? 'Edit Data Siswa' : 'Tambah Siswa Baru',
+        bodyHtml: `
+          <div class="form-group" style="margin-top:0;">
+            <label class="field-label">Nomor Urut / Absen</label>
+            <input id="sis-no" type="number" class="input" value="${sis ? sis.no_urut : nextNo}" />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Nama Lengkap Siswa</label>
+            <input id="sis-nama" type="text" class="input" placeholder="Contoh: ACHMAD ALBY ANANDIO" value="${escapeHtml(sis?.nama_lengkap || '')}" />
+          </div>
+        `,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="sis-cancel">Batal</button>
+          <button type="button" class="btn btn-primary" id="sis-save">Simpan</button>
+        `
+      });
+      document.getElementById('sis-cancel').onclick = closeModal;
+      document.getElementById('sis-save').onclick = async () => {
+        const no_urut = Number(document.getElementById('sis-no').value) || 1;
+        const nama_lengkap = document.getElementById('sis-nama').value.trim().toUpperCase();
+        if (!nama_lengkap) { showToast('Nama siswa wajib diisi', true); return; }
+        try {
+          if (isEdit) await dbUpdate('siswa', sis.id, { no_urut, nama_lengkap });
+          else await dbInsert('siswa', { kelas_id: state.activeKelasId, no_urut, nama_lengkap, aktif: true });
+          showToast(isEdit ? 'Data siswa diperbarui' : 'Siswa ditambahkan');
+          closeModal();
+          await loadAllData();
+        } catch (err) { showToast(err.message, true); }
+      };
+    }
+
+    function openSalinSiswaModal() {
+      const otherKelas = state.kelas.filter(k => k.id !== state.activeKelasId);
+      if (!otherKelas.length) {
+        showToast('Buat kelas tujuan baru terlebih dahulu (di tab Kelas / Tahun Pelajaran)', true);
+        return;
+      }
+      const tpMap = Object.fromEntries(state.tahunPelajaran.map(t => [t.id, t.nama]));
+      const srcSiswa = getSiswaAktifKelas();
+
+      openModal({
+        title: 'Naik Kelas / Salin Daftar Siswa',
+        bodyHtml: `
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+            Salin <strong>${srcSiswa.length} siswa</strong> dari kelas saat ini ke kelas tujuan baru tanpa perlu mengetik ulang nama satu per satu.
+          </p>
+          <div class="form-group" style="margin-top:0;">
+            <label class="field-label">Pilih Kelas Tujuan</label>
+            <select id="salin-target-kls" class="select">
+              ${otherKelas.map(k => `<option value="${k.id}">TP ${escapeHtml(tpMap[k.tahun_pelajaran_id] || '-')} — ${escapeHtml(k.nama_kelas)}</option>`).join('')}
+            </select>
+          </div>
+        `,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="salin-cancel">Batal</button>
+          <button type="button" class="btn btn-primary" id="salin-ok">Salin ${srcSiswa.length} Siswa</button>
+        `
+      });
+      document.getElementById('salin-cancel').onclick = closeModal;
+      document.getElementById('salin-ok').onclick = async () => {
+        const targetId = document.getElementById('salin-target-kls').value;
+        const rows = srcSiswa.map(s => ({
+          kelas_id: targetId,
+          no_urut: s.no_urut,
+          nama_lengkap: s.nama_lengkap,
+          aktif: true
+        }));
+        try {
+          await dbInsert('siswa', rows);
+          showToast(`${rows.length} siswa berhasil disalin ke kelas tujuan!`);
+          closeModal();
+          await loadAllData();
+        } catch (err) { showToast(err.message, true); }
+      };
+    }
+
+    function openKelasModal(kls = null) {
+      const isEdit = !!kls;
+      openModal({
+        title: isEdit ? 'Edit Kelas' : 'Tambah Kelas Baru',
+        bodyHtml: `
+          <div class="form-group" style="margin-top:0;">
+            <label class="field-label">Nama Kelas</label>
+            <input id="kls-nama" type="text" class="input" placeholder="Contoh: KELAS V (LIMA)" value="${escapeHtml(kls?.nama_kelas || '')}" />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Nama Sekolah</label>
+            <input id="kls-sekolah" type="text" class="input" placeholder="Contoh: SDN 1 Lamongan" value="${escapeHtml(kls?.nama_sekolah || '')}" />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Nama Wali Kelas</label>
+            <input id="kls-wali" type="text" class="input" placeholder="Contoh: Ibu Siti Aminah, S.Pd" value="${escapeHtml(kls?.wali_kelas || '')}" />
+          </div>
+        `,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="kls-cancel">Batal</button>
+          <button type="button" class="btn btn-primary" id="kls-save">Simpan</button>
+        `
+      });
+      document.getElementById('kls-cancel').onclick = closeModal;
+      document.getElementById('kls-save').onclick = async () => {
+        const nama_kelas = document.getElementById('kls-nama').value.trim();
+        const nama_sekolah = document.getElementById('kls-sekolah').value.trim();
+        const wali_kelas = document.getElementById('kls-wali').value.trim();
+        if (!nama_kelas) { showToast('Nama kelas wajib diisi', true); return; }
+        try {
+          if (isEdit) await dbUpdate('kelas', kls.id, { nama_kelas, nama_sekolah, wali_kelas });
+          else {
+            const ins = await dbInsert('kelas', { tahun_pelajaran_id: state.activeTpId, nama_kelas, nama_sekolah, wali_kelas });
+            if (ins?.[0]?.id) state.activeKelasId = ins[0].id;
+          }
+          showToast(isEdit ? 'Kelas diperbarui' : 'Kelas ditambahkan');
+          closeModal();
+          await loadAllData();
+        } catch (err) { showToast(err.message, true); }
+      };
+    }
+
+    function openTpModal(tp = null) {
+      const isEdit = !!tp;
+      const defYear = tp ? tp.tahun_mulai : new Date().getFullYear();
+      openModal({
+        title: isEdit ? 'Edit Tahun Pelajaran' : 'Tambah Tahun Pelajaran',
+        bodyHtml: `
+          <div class="form-group" style="margin-top:0;">
+            <label class="field-label">Tahun Mulai (Angka 4 digit)</label>
+            <input id="tp-mulai" type="number" min="2020" max="2099" class="input" value="${defYear}" />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Label Tahun Pelajaran</label>
+            <input id="tp-nama" type="text" class="input" placeholder="Contoh: 2026/2027" value="${escapeHtml(tp?.nama || `${defYear}/${defYear + 1}`)}" />
+          </div>
+        `,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="tp-cancel">Batal</button>
+          <button type="button" class="btn btn-primary" id="tp-save">Simpan</button>
+        `
+      });
+      document.getElementById('tp-mulai').oninput = (e) => {
+        const y = Number(e.target.value);
+        if (y >= 2000 && !isEdit) document.getElementById('tp-nama').value = `${y}/${y + 1}`;
+      };
+      document.getElementById('tp-cancel').onclick = closeModal;
+      document.getElementById('tp-save').onclick = async () => {
+        const tahun_mulai = Number(document.getElementById('tp-mulai').value);
+        const nama = document.getElementById('tp-nama').value.trim();
+        if (!tahun_mulai || !nama) { showToast('Lengkapi Tahun Mulai & Label', true); return; }
+        try {
+          if (isEdit) await dbUpdate('tahun_pelajaran', tp.id, { tahun_mulai, nama });
+          else {
+            const ins = await dbInsert('tahun_pelajaran', { tahun_mulai, nama, is_aktif: state.tahunPelajaran.length === 0 });
+            if (ins?.[0]?.id) state.activeTpId = ins[0].id;
+          }
+          showToast(isEdit ? 'Tahun Pelajaran diperbarui' : 'Tahun Pelajaran ditambahkan');
+          closeModal();
+          await loadAllData();
+        } catch (err) { showToast(err.message, true); }
+      };
+    }
+
+    // =====================================================================
+    // EXCEL IMPORT & EXPORT (SheetJS)
+    // =====================================================================
+    function downloadTemplateSiswaExcel(kls) {
+      if (typeof XLSX === 'undefined') { showToast('Library Excel belum siap', true); return; }
+      const data = [
+        ['NO URUT', 'NAMA LENGKAP SISWA'],
+        [1, 'ACHMAD ALBY ANANDIO'],
+        [2, 'ADINDA PUTRI AYUNITA'],
+        [3, 'CONTOH NAMA SISWA KETIGA']
+      ];
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      ws['!cols'] = [{ wch: 12 }, { wch: 36 }];
+      XLSX.utils.book_append_sheet(wb, ws, 'Template Siswa');
+      const klsName = (kls?.nama_kelas || 'Kelas').replace(/[^\w\s-]/g, '').trim();
+      XLSX.writeFile(wb, `Template_Data_Siswa_${klsName}.xlsx`);
+      showToast('Template Excel Data Siswa berhasil diunduh');
+    }
+
+    function downloadTemplateTabunganBulanan(kls, tp, bObj, year, siswaList) {
+      if (typeof XLSX === 'undefined') { showToast('Library Excel belum siap', true); return; }
+      const daysInMonth = new Date(year, bObj.month, 0).getDate();
+      const header = ['NO', 'NAMA SISWA', ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
+      const data = [
+        [`TEMPLATE TABUNGAN BULAN ${bObj.name.toUpperCase()} ${year} - ${kls.nama_kelas} (TP ${tp.nama})`],
+        ['Petunjuk: Isi nominal angka saja tanpa Rp/titik (contoh: 10000) pada kolom tanggal 1-31. Biarkan kosong jika tidak menabung.'],
+        header
+      ];
+      const source = siswaList.length ? siswaList : [
+        { no_urut: 1, nama_lengkap: 'ACHMAD ALBY ANANDIO' },
+        { no_urut: 2, nama_lengkap: 'ADINDA PUTRI AYUNITA' }
+      ];
+      source.forEach((s, idx) => {
+        data.push([s.no_urut || idx + 1, s.nama_lengkap, ...Array(daysInMonth).fill('')]);
+      });
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      ws['!cols'] = [{ wch: 6 }, { wch: 32 }, ...Array(daysInMonth).fill({ wch: 9 })];
+      XLSX.utils.book_append_sheet(wb, ws, `${bObj.short} ${year}`);
+      XLSX.writeFile(wb, `Template_Tabungan_${bObj.name}_${year}.xlsx`);
+      showToast(`Template Tabungan ${bObj.name} ${year} berhasil diunduh`);
+    }
+
+    function downloadTemplateTabunganRekap(kls, tp, siswaList) {
+      if (typeof XLSX === 'undefined') { showToast('Library Excel belum siap', true); return; }
+      const header = ['NO', 'NAMA SISWA', ...BULAN_TP.map(b => b.name.toUpperCase())];
+      const data = [
+        [`TEMPLATE REKAP TABUNGAN PER BULAN - ${kls.nama_kelas} (TP ${tp.nama})`],
+        ['Petunjuk: Isi total tabungan per bulan tiap anak dengan angka saja (contoh: 50000). Biarkan kosong/0 jika belum ada.'],
+        header
+      ];
+      const source = siswaList.length ? siswaList : [
+        { no_urut: 1, nama_lengkap: 'ACHMAD ALBY ANANDIO' },
+        { no_urut: 2, nama_lengkap: 'ADINDA PUTRI AYUNITA' }
+      ];
+      source.forEach((s, idx) => {
+        data.push([s.no_urut || idx + 1, s.nama_lengkap, ...Array(12).fill('')]);
+      });
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      ws['!cols'] = [{ wch: 6 }, { wch: 32 }, ...Array(12).fill({ wch: 13 })];
+      XLSX.utils.book_append_sheet(wb, ws, 'Rekap Per Bulan');
+      XLSX.writeFile(wb, `Template_Rekap_PerBulan_TP_${tp.nama.replace('/', '-')}.xlsx`);
+      showToast('Template Rekap Tabungan Per Bulan berhasil diunduh');
+    }
+
+    function parseNominalCell(raw) {
+      if (raw === null || raw === undefined || raw === '') return 0;
+      if (typeof raw === 'number') return Math.round(raw);
+      const cleaned = String(raw).replace(/rp/gi, '').replace(/\./g, '').replace(/,/g, '').trim();
+      const num = Number(cleaned);
+      return isNaN(num) ? 0 : Math.round(num);
+    }
+
+    async function handleParseExcelTabungan(e, tp, siswaList, container) {
+      const file = e.target.files?.[0];
+      e.target.value = '';
+      if (!file || typeof XLSX === 'undefined') return;
+
+      try {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+        const existingMap = new Map(siswaList.map(s => [s.nama_lengkap.trim().toUpperCase(), s]));
+        const autoAdd = document.getElementById('imp-auto-add-siswa')?.checked ?? true;
+        const entries = [];
+        const newStudentMap = new Map();
+        let nextUrut = siswaList.length + 1;
+
+        if (state.importMode === 'bulanan') {
+          const bObj = BULAN_TP[state.importMonthIdx] || BULAN_TP[0];
+          const year = Number(tp.tahun_mulai) + bObj.offsetYear;
+          const daysInMonth = new Date(year, bObj.month, 0).getDate();
+          const ymPrefix = `${year}-${String(bObj.month).padStart(2, '0')}`;
+
+          // Cari baris header tanggal (1, 2, 3...)
+          let headerRowIdx = -1;
+          let dayColMap = {}; // dayNumber -> colIdx
+          let nameColIdx = 1;
+
+          for (let r = 0; r < Math.min(rows.length, 15); r++) {
+            const row = rows[r];
+            let foundDays = 0;
+            const tempMap = {};
+            row.forEach((cell, cIdx) => {
+              const n = Number(String(cell).trim());
+              if (Number.isInteger(n) && n >= 1 && n <= 31 && tempMap[n] === undefined) {
+                tempMap[n] = cIdx;
+                foundDays++;
+              }
+              if (/^nama/i.test(String(cell).trim())) nameColIdx = cIdx;
+            });
+            if (foundDays >= 7) {
+              headerRowIdx = r;
+              dayColMap = tempMap;
+              break;
+            }
+          }
+
+          if (headerRowIdx < 0) {
+            showToast('Format kolom tanggal 1–31 tidak ditemukan. Gunakan Template 1–31.', true);
+            return;
+          }
+
+          for (let r = headerRowIdx + 1; r < rows.length; r++) {
+            const row = rows[r];
+            const rawName = String(row[nameColIdx] || '').trim();
+            if (!rawName || rawName.length < 2) continue;
+            if (/^(total|jumlah|rekap|bulan|no\b|nama\b|petunjuk)/i.test(rawName)) continue;
+
+            const upper = rawName.toUpperCase();
+            const existing = existingMap.get(upper);
+            if (!existing && !autoAdd) continue;
+
+            if (!existing && !newStudentMap.has(upper)) {
+              const noVal = Number(row[0]);
+              newStudentMap.set(upper, {
+                kelas_id: state.activeKelasId,
+                no_urut: Number.isInteger(noVal) && noVal > 0 ? noVal : nextUrut++,
+                nama_lengkap: upper,
+                aktif: true
+              });
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+              const cIdx = dayColMap[d];
+              if (cIdx === undefined) continue;
+              const val = parseNominalCell(row[cIdx]);
+              if (val === 0) continue;
+              entries.push({
+                nama_lengkap: upper,
+                siswa_id: existing ? existing.id : null,
+                isNewStudent: !existing,
+                tanggal: `${ymPrefix}-${String(d).padStart(2, '0')}`,
+                jenis: val < 0 ? 'tarik' : 'setor',
+                nominal: Math.abs(val),
+                keterangan: `Impor Excel (${bObj.name} ${year})`
+              });
+            }
+          }
+        } else {
+          // Format Rekap Per Bulan (Juli - Juni)
+          let headerRowIdx = -1;
+          let monthColMap = {}; // monthIdx (0..11) -> colIdx
+          let nameColIdx = 1;
+
+          for (let r = 0; r < Math.min(rows.length, 15); r++) {
+            const row = rows[r];
+            let foundMonths = 0;
+            const tempMap = {};
+            row.forEach((cell, cIdx) => {
+              const txt = String(cell).trim().toLowerCase();
+              if (/^nama/i.test(txt)) nameColIdx = cIdx;
+              BULAN_TP.forEach(b => {
+                if (txt === b.name.toLowerCase() || txt === b.short.toLowerCase() || txt.startsWith(b.name.toLowerCase())) {
+                  if (tempMap[b.idx] === undefined) {
+                    tempMap[b.idx] = cIdx;
+                    foundMonths++;
+                  }
+                }
+              });
+            });
+            if (foundMonths >= 3) {
+              headerRowIdx = r;
+              monthColMap = tempMap;
+              break;
+            }
+          }
+
+          if (headerRowIdx < 0) {
+            showToast('Kolom nama bulan (Juli–Juni) tidak ditemukan. Gunakan Template Rekap Jul–Jun.', true);
+            return;
+          }
+
+          for (let r = headerRowIdx + 1; r < rows.length; r++) {
+            const row = rows[r];
+            const rawName = String(row[nameColIdx] || '').trim();
+            if (!rawName || rawName.length < 2) continue;
+            if (/^(total|jumlah|rekap|bulan|no\b|nama\b|petunjuk)/i.test(rawName)) continue;
+
+            const upper = rawName.toUpperCase();
+            const existing = existingMap.get(upper);
+            if (!existing && !autoAdd) continue;
+
+            if (!existing && !newStudentMap.has(upper)) {
+              const noVal = Number(row[0]);
+              newStudentMap.set(upper, {
+                kelas_id: state.activeKelasId,
+                no_urut: Number.isInteger(noVal) && noVal > 0 ? noVal : nextUrut++,
+                nama_lengkap: upper,
+                aktif: true
+              });
+            }
+
+            BULAN_TP.forEach(b => {
+              const cIdx = monthColMap[b.idx];
+              if (cIdx === undefined) return;
+              const val = parseNominalCell(row[cIdx]);
+              if (val === 0) return;
+              const year = Number(tp.tahun_mulai) + b.offsetYear;
+              const tanggal = `${year}-${String(b.month).padStart(2, '0')}-01`;
+              entries.push({
+                nama_lengkap: upper,
+                siswa_id: existing ? existing.id : null,
+                isNewStudent: !existing,
+                tanggal,
+                jenis: val < 0 ? 'tarik' : 'setor',
+                nominal: Math.abs(val),
+                keterangan: `Impor Rekap ${b.name} ${year}`
+              });
+            });
+          }
+        }
+
+        if (!entries.length) {
+          showToast('Tidak ada nominal tabungan yang terbaca di file Excel tersebut.', true);
+          return;
+        }
+
+        const totalNominal = entries.reduce((acc, it) => acc + (it.jenis === 'tarik' ? -it.nominal : it.nominal), 0);
+        state.importDraft = {
+          fileName: file.name,
+          newStudents: Array.from(newStudentMap.values()),
+          entries,
+          totalNominal
+        };
+        renderKelola(container);
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal membaca file Excel: ' + err.message, true);
+      }
+    }
+
+    async function commitImportTabungan(container) {
+      const draft = state.importDraft;
+      if (!draft || !draft.entries.length) return;
+      const btn = document.getElementById('btn-commit-imp-tx');
+      if (btn) { btn.disabled = true; btn.textContent = 'Mengimpor...'; }
+
+      try {
+        const nameToId = new Map(getSiswaAktifKelas().map(s => [s.nama_lengkap.trim().toUpperCase(), s.id]));
+
+        if (draft.newStudents.length) {
+          const insertedSiswa = await dbInsert('siswa', draft.newStudents);
+          (insertedSiswa || []).forEach(s => {
+            nameToId.set(s.nama_lengkap.trim().toUpperCase(), s.id);
+          });
+        }
+
+        const txRows = [];
+        draft.entries.forEach(it => {
+          const sid = it.siswa_id || nameToId.get(it.nama_lengkap);
+          if (!sid) return;
+          txRows.push({
+            siswa_id: sid,
+            kelas_id: state.activeKelasId,
+            tanggal: it.tanggal,
+            jenis: it.jenis,
+            nominal: it.nominal,
+            keterangan: it.keterangan
+          });
+        });
+
+        if (!txRows.length) throw new Error('Tidak ada transaksi valid yang bisa disimpan.');
+
+        await dbInsert('transaksi_tabungan', txRows);
+        state.importDraft = null;
+        showToast(`Berhasil mengimpor ${txRows.length} transaksi tabungan!`);
+        await loadAllData();
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal menyimpan impor: ' + (err.message || err), true);
+        if (btn) { btn.disabled = false; btn.textContent = '✅ Simpan & Impor Sekarang'; }
+      }
+    }
+
+    async function handleImportExcelSiswa(e) {
+      const file = e.target.files?.[0];
+      e.target.value = '';
+      if (!file || typeof XLSX === 'undefined') return;
+      try {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        const existingNames = new Set(getSiswaAktifKelas().map(s => s.nama_lengkap.toUpperCase()));
+        const toInsert = [];
+        let urut = getSiswaAktifKelas().length + 1;
+
+        for (const r of rows) {
+          const maybeNo = Number(r[0]);
+          const maybeName = String(r[1] || r[0] || '').trim();
+          if (!maybeName || maybeName.length < 3) continue;
+          if (/^(no|nama|rekap|bulan|catatan|kelas|jumlah)/i.test(maybeName)) continue;
+          const upper = maybeName.toUpperCase();
+          if (existingNames.has(upper)) continue;
+          existingNames.add(upper);
+          toInsert.push({
+            kelas_id: state.activeKelasId,
+            no_urut: !isNaN(maybeNo) && maybeNo > 0 ? maybeNo : urut++,
+            nama_lengkap: upper,
+            aktif: true
+          });
+        }
+        if (!toInsert.length) {
+          showToast('Tidak ditemukan nama siswa baru di file Excel tersebut', true);
+          return;
+        }
+        await dbInsert('siswa', toInsert);
+        showToast(`${toInsert.length} siswa berhasil diimpor dari Excel!`);
+        await loadAllData();
+      } catch (err) {
+        showToast('Gagal membaca file Excel: ' + err.message, true);
+      }
+    }
+
+    function exportBulananExcel(kls, tp, bObj, year, daysInMonth, siswaList, cellMap) {
+      if (typeof XLSX === 'undefined') { showToast('Library Excel belum siap', true); return; }
+      const header = ['NO', 'NAMA SISWA', ...Array.from({ length: daysInMonth }, (_, i) => i + 1), 'JUMLAH'];
+      const data = [
+        [`REKAP TABUNGAN ${kls.nama_kelas} - TP ${tp.nama}`],
+        [`BULAN ${bObj.name.toUpperCase()} ${year}`],
+        [],
+        header
+      ];
+      siswaList.forEach((s, i) => {
+        let sum = 0;
+        const row = [s.no_urut || i + 1, s.nama_lengkap];
+        for (let d = 1; d <= daysInMonth; d++) {
+          const val = cellMap[s.id]?.[d]?.sum || 0;
+          sum += val;
+          row.push(val || '');
+        }
+        row.push(sum);
+        data.push(row);
+      });
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, ws, `${bObj.short} ${year}`);
+      XLSX.writeFile(wb, `Rekap_Tabungan_${kls.nama_kelas}_${bObj.name}_${year}.xlsx`);
+    }
+
+    function exportTahunanExcel(kls, tp, siswaList, matrix) {
+      if (typeof XLSX === 'undefined') { showToast('Library Excel belum siap', true); return; }
+      const header = ['NO', 'NAMA SISWA', ...BULAN_TP.map(b => b.name.toUpperCase()), 'TOTAL TAHUNAN'];
+      const data = [
+        [`REKAP TABUNGAN TAHUNAN ${kls.nama_kelas} - TP ${tp.nama}`],
+        [],
+        header
+      ];
+      siswaList.forEach((s, i) => {
+        const vals = matrix[s.id] || Array(12).fill(0);
+        const total = vals.reduce((a, b) => a + b, 0);
+        data.push([s.no_urut || i + 1, s.nama_lengkap, ...vals, total]);
+      });
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, ws, `TP ${tp.nama.replace('/', '-')}`);
+      XLSX.writeFile(wb, `Rekap_Tahunan_${kls.nama_kelas}_TP_${tp.nama.replace('/', '-')}.xlsx`);
+    }
+
+    // =====================================================================
+    // AUTHENTICATION FLOW (100% REAL SUPABASE SAAT IS_PREVIEW = false)
+    // =====================================================================
+    function enterApp(email) {
+      state.user = { email };
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-shell').classList.add('active');
+      document.getElementById('admin-email-txt').textContent = email;
+      document.getElementById('admin-avatar-txt').textContent = (email || 'G')[0].toUpperCase();
+      loadAllData();
+    }
+
+    async function handleLogout() {
+      try {
+        if (!IS_PREVIEW) {
+          const { error } = await supabase.auth.signOut();
+          if (error) throw error;
+        }
+        state.user = null;
+        document.getElementById('app-shell').classList.remove('active');
+        document.getElementById('login-screen').style.display = 'flex';
+        showToast('Anda telah keluar');
+      } catch (err) {
+        showToast(err.message || 'Gagal logout', true);
+      }
+    }
+
+    async function bootstrap() {
+      // Aturan ketat IS_PREVIEW: tampilkan elemen preview HANYA jika IS_PREVIEW === true
+      if (IS_PREVIEW) {
+        document.getElementById('preview-banner').style.display = 'flex';
+        document.getElementById('preview-quick-login-wrap').style.display = 'block';
+        document.getElementById('btn-preview-login').onclick = () => enterApp('preview.guru@sitabung.local');
+      } else {
+        document.getElementById('preview-banner')?.remove();
+        document.getElementById('preview-quick-login-wrap')?.remove();
+      }
+
+      // Responsive tombol logout mobile
+      const syncMobileLogout = () => {
+        document.getElementById('btn-logout-mobile').style.display = window.innerWidth <= 768 ? 'inline-flex' : 'none';
+      };
+      syncMobileLogout();
+      window.addEventListener('resize', syncMobileLogout);
+
+      // Event listeners global
+      document.getElementById('login-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const errBox = document.getElementById('login-error');
+        errBox.style.display = 'none';
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const btn = document.getElementById('btn-login-submit');
+        btn.disabled = true;
+        btn.textContent = 'Memverifikasi...';
+
+        try {
+          if (IS_PREVIEW) {
+            enterApp(email || 'admin@preview.local');
+          } else {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            enterApp(data.user.email);
+          }
+        } catch (err) {
+          errBox.textContent = err.message || 'Email atau password tidak valid.';
+          errBox.style.display = 'block';
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Masuk ke Aplikasi';
+        }
+      };
+
+      document.querySelectorAll('#desktop-nav .nav-item, #mobile-nav .m-nav-btn').forEach(btn => {
+        btn.onclick = () => setView(btn.dataset.view);
+      });
+      document.getElementById('global-tp-select').onchange = (e) => {
+        state.activeTpId = e.target.value;
+        const klsList = getKelasByTp(state.activeTpId);
+        state.activeKelasId = klsList[0]?.id || null;
+        state.selectedStudentId = null;
+        renderSwitchers();
+        renderCurrentView();
+      };
+      document.getElementById('global-kelas-select').onchange = (e) => {
+        state.activeKelasId = e.target.value;
+        state.selectedStudentId = null;
+        renderSwitchers();
+        renderCurrentView();
+      };
+      document.getElementById('btn-quick-satuan').onclick = () => openTxModal();
+      document.getElementById('btn-quick-massal').onclick = () => openMassalModal();
+      document.getElementById('btn-logout-desktop').onclick = handleLogout;
+      document.getElementById('btn-logout-mobile').onclick = handleLogout;
+      document.getElementById('btn-install-sidebar').onclick = triggerInstallPWA;
+      document.getElementById('modal-close-btn').onclick = closeModal;
+      document.getElementById('app-modal').onclick = (e) => {
+        if (e.target.id === 'app-modal') closeModal();
+      };
+
+      // Cek sesi aktif Supabase saat produksi
+      if (!IS_PREVIEW) {
+        try {
+          const { data } = await supabase.auth.getSession();
+          if (data?.session?.user) {
+            enterApp(data.session.user.email);
+          }
+        } catch (err) {
+          console.error('Session check error:', err);
+        }
+      }
+    }
+
+    bootstrap();
+  </script>
+</body>
+</html>
