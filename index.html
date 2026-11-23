@@ -7,10 +7,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="SiTabung" />
-  <title>SiTabung — Aplikasi Tabungan Kelas</title>
+  <title>SiTabung — Aplikasi Tabungan &amp; Buku Siswa</title>
 
   <!-- PWA Manifest via Data URI (Single-File PWA) -->
-  <link rel="manifest" id="pwa-manifest-link" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22SiTabung%20%E2%80%94%20Tabungan%20Kelas%22%2C%22short_name%22%3A%22SiTabung%22%2C%22description%22%3A%22Aplikasi%20pencatatan%20tabungan%20siswa%20multi-kelas%20dan%20multi-tahun%20ajaran%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4fbf6%22%2C%22theme_color%22%3A%22%2315803d%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%25270%25200%2520512%2520512%2527%253E%253Crect%2520width%3D%2527512%2527%2520height%3D%2527512%2527%2520rx%3D%2527112%2527%2520fill%3D%2527%252315803d%2527%2F%253E%253Cpath%2520d%3D%2527M144%2520288c0-70.7%252057.3-128%2520128-128h80v48h-80c-44.2%25200-80%252035.8-80%252080s35.8%252080%252080%252080h80v48h-80c-70.7%25200-128-57.3-128-128z%2527%2520fill%3D%2527%2523bbf7d0%2527%2F%253E%253Ccircle%2520cx%3D%2527320%2527%2520cy%3D%2527288%2527%2520r%3D%252748%2527%2520fill%3D%2527%2523ffffff%2527%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D' />
+  <link rel="manifest" id="pwa-manifest-link" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22SiTabung%20%E2%80%94%20Tabungan%20Kelas%22%2C%22short_name%22%3A%22SiTabung%22%2C%22description%22%3A%22Aplikasi%20pencatatan%20tabungan%20dan%20pembayaran%20buku%20siswa%20multi-kelas%20dan%20multi-tahun%20ajaran%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f4fbf6%22%2C%22theme_color%22%3A%22%2315803d%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%25270%25200%2520512%2520512%2527%253E%253Crect%2520width%3D%2527512%2527%2520height%3D%2527512%2527%2520rx%3D%2527112%2527%2520fill%3D%2527%252315803d%2527%2F%253E%253Cpath%2520d%3D%2527M144%2520288c0-70.7%252057.3-128%2520128-128h80v48h-80c-44.2%25200-80%252035.8-80%252080s35.8%252080%252080%252080h80v48h-80c-70.7%25200-128-57.3-128-128z%2527%2520fill%3D%2527%2523bbf7d0%2527%2F%253E%253Ccircle%2520cx%3D%2527320%2527%2520cy%3D%2527288%2527%2520r%3D%252748%2527%2520fill%3D%2527%2523ffffff%2527%2F%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D' />
 
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -430,35 +430,36 @@
     .mobile-bottom-nav {
       display: none;
       position: fixed;
-      left: 12px;
-      right: 12px;
-      bottom: 12px;
+      left: 8px;
+      right: 8px;
+      bottom: 10px;
       z-index: 40;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(22, 163, 74, 0.24);
-      border-radius: 20px;
+      border-radius: 18px;
       box-shadow: var(--shadow-float);
-      padding: 6px;
+      padding: 5px 4px;
       justify-content: space-around;
       align-items: center;
     }
     .m-nav-btn {
       flex: 1;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 3px;
-      padding: 7px 4px;
+      padding: 6px 2px;
       border: none;
       background: transparent;
       color: var(--text-muted);
       font-family: inherit;
-      font-size: 10.5px;
+      font-size: 9.5px;
       font-weight: 700;
-      border-radius: 14px;
+      border-radius: 13px;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -759,8 +760,40 @@
       padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700;
     }
     .badge-green { background: var(--leaf-100); color: var(--leaf-800); }
+    .badge-yellow { background: var(--warning-bg); color: var(--warning); }
     .badge-red { background: var(--danger-bg); color: var(--danger); }
     .badge-gray { background: #f1f5f9; color: #475569; }
+    .badge-blue { background: #eff6ff; color: #1d4ed8; }
+
+    /* Buku Siswa Checklist & Progress */
+    .buku-check-list { display: flex; flex-direction: column; gap: 7px; }
+    .buku-check-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 11px;
+      background: #fff;
+      border: 1px solid var(--border-glass);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .buku-check-item:hover { border-color: var(--leaf-500); background: var(--leaf-50); }
+    .buku-check-item.checked { background: var(--leaf-50); border-color: rgba(22, 163, 74, 0.35); }
+    .buku-progress-bar {
+      width: 100%;
+      height: 7px;
+      border-radius: 99px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+    .buku-progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--leaf-500), var(--leaf-700));
+      transition: width 0.3s ease;
+    }
 
     /* =====================================================================
        MODALS & TOAST (NO alert() / confirm())
@@ -1149,7 +1182,7 @@
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16 11h.01"/></svg>
         </div>
         <h1 class="login-title">SiTabung Kelas</h1>
-        <p class="login-sub">Masuk sebagai Guru / Admin untuk mengelola tabungan siswa lintas kelas &amp; tahun pelajaran.</p>
+        <p class="login-sub">Masuk sebagai Guru / Admin untuk mengelola tabungan &amp; pembayaran buku siswa lintas kelas &amp; tahun pelajaran.</p>
 
         <form id="login-form">
           <div class="form-group">
@@ -1210,6 +1243,10 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             Rekap Tahunan
           </button>
+          <button class="nav-item" data-view="buku">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Buku Siswa
+          </button>
           <button class="nav-item" data-view="kelola">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             Kelola Data &amp; HP
@@ -1264,23 +1301,27 @@
       <!-- Mobile Floating Bottom Navigation -->
       <nav class="mobile-bottom-nav" id="mobile-nav">
         <button class="m-nav-btn active" data-view="dashboard">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
           Beranda
         </button>
         <button class="m-nav-btn" data-view="peranak">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
           Per Anak
         </button>
         <button class="m-nav-btn" data-view="bulanan">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Bulanan
         </button>
         <button class="m-nav-btn" data-view="tahunan">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           Tahunan
         </button>
+        <button class="m-nav-btn" data-view="buku">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Buku
+        </button>
         <button class="m-nav-btn" data-view="kelola">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09"/></svg>
           Kelola
         </button>
       </nav>
@@ -1314,6 +1355,7 @@
     const IS_PREVIEW = false; // Ubah menjadi false SAAT DEPLOY agar mode preview & data dummy hilang dan terhubung 100% ke Supabase
     const SUPABASE_URL = "https://oohzibxlgujgldwozyby.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_aMth-oupHS1vhLBUZS62Dg_XnmMGQNi";
+
     // Inisialisasi client Supabase hanya saat produksi (IS_PREVIEW === false)
     const supabase = !IS_PREVIEW ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -1371,6 +1413,9 @@
       user: null,
       view: 'dashboard',
       kelolaTab: 'siswa',
+      bukuTab: 'tagihan',
+      bukuFilter: 'all',
+      bukuSearch: '',
       selectedStudentId: null,
       searchStudent: '',
       selectedMonthIdx: (() => {
@@ -1382,6 +1427,9 @@
       kelas: [],
       siswa: [],
       transaksi: [],
+      bukuMapel: [],
+      tagihanBuku: [],
+      pembayaranBuku: [],
       activeTpId: null,
       activeKelasId: null,
       importMode: 'bulanan',
@@ -1407,6 +1455,20 @@
       transaksi_tabungan: [
         { id: 'tx-1', siswa_id: 'sis-1', kelas_id: 'kls-1', tanggal: '2026-07-23', jenis: 'setor', nominal: 50000, keterangan: 'Setoran awal' },
         { id: 'tx-2', siswa_id: 'sis-2', kelas_id: 'kls-1', tanggal: '2026-07-27', jenis: 'setor', nominal: 20000, keterangan: 'Tabungan harian' }
+      ],
+      buku_mapel: [
+        { id: 'bm-1', kelas_id: 'kls-1', nama_mapel: 'LKS Matematika', harga: 15000 },
+        { id: 'bm-2', kelas_id: 'kls-1', nama_mapel: 'LKS IPAS', harga: 15000 }
+      ],
+      tagihan_buku: [
+        { id: 'tg-1', kelas_id: 'kls-1', siswa_id: 'sis-1', buku_mapel_id: 'bm-1', harga: 15000 },
+        { id: 'tg-2', kelas_id: 'kls-1', siswa_id: 'sis-1', buku_mapel_id: 'bm-2', harga: 15000 },
+        { id: 'tg-3', kelas_id: 'kls-1', siswa_id: 'sis-2', buku_mapel_id: 'bm-1', harga: 15000 },
+        { id: 'tg-4', kelas_id: 'kls-1', siswa_id: 'sis-2', buku_mapel_id: 'bm-2', harga: 15000 }
+      ],
+      pembayaran_buku: [
+        { id: 'pb-1', kelas_id: 'kls-1', siswa_id: 'sis-1', tanggal: '2026-07-25', nominal: 30000, metode: 'tunai', keterangan: 'Lunas tunai' },
+        { id: 'pb-2', kelas_id: 'kls-1', siswa_id: 'sis-2', tanggal: '2026-07-28', nominal: 10000, metode: 'pip', keterangan: 'Cicilan 1 potong PIP' }
       ]
     } : null;
 
@@ -1442,7 +1504,41 @@
       .filter(s => s.kelas_id === state.activeKelasId)
       .sort((a, b) => (a.no_urut || 999) - (b.no_urut || 999) || a.nama_lengkap.localeCompare(b.nama_lengkap));
     const getTxAktifKelas = () => state.transaksi.filter(t => t.kelas_id === state.activeKelasId);
+    const getBukuMapelAktif = () => state.bukuMapel.filter(m => m.kelas_id === state.activeKelasId);
+    const getTagihanBukuAktif = () => state.tagihanBuku.filter(t => t.kelas_id === state.activeKelasId);
+    const getPembayaranBukuAktif = () => state.pembayaranBuku.filter(p => p.kelas_id === state.activeKelasId);
     const signedNominal = (tx) => tx.jenis === 'tarik' ? -Math.abs(Number(tx.nominal || 0)) : Math.abs(Number(tx.nominal || 0));
+
+    function getRekapBukuSiswa(siswaId) {
+      const mapelMap = Object.fromEntries(getBukuMapelAktif().map(m => [m.id, m]));
+      const tagihanList = getTagihanBukuAktif()
+        .filter(t => t.siswa_id === siswaId && mapelMap[t.buku_mapel_id])
+        .map(t => ({
+          ...t,
+          nama_mapel: mapelMap[t.buku_mapel_id].nama_mapel,
+          harga_aktif: Number(t.harga ?? mapelMap[t.buku_mapel_id].harga ?? 0)
+        }));
+      const bayarList = getPembayaranBukuAktif()
+        .filter(p => p.siswa_id === siswaId)
+        .sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
+
+      const totalTagihan = tagihanList.reduce((acc, t) => acc + Number(t.harga_aktif || 0), 0);
+      const totalBayar = bayarList.reduce((acc, p) => acc + Number(p.nominal || 0), 0);
+      const totalTunai = bayarList.filter(p => p.metode !== 'pip').reduce((acc, p) => acc + Number(p.nominal || 0), 0);
+      const totalPip = bayarList.filter(p => p.metode === 'pip').reduce((acc, p) => acc + Number(p.nominal || 0), 0);
+      const sisa = Math.max(0, totalTagihan - totalBayar);
+
+      let status = 'tanpa_tagihan';
+      if (totalTagihan > 0) {
+        if (totalBayar >= totalTagihan) status = 'lunas';
+        else if (totalBayar > 0) status = 'cicil';
+        else status = 'belum';
+      } else if (totalBayar > 0) {
+        status = 'lunas';
+      }
+
+      return { tagihanList, bayarList, totalTagihan, totalBayar, totalTunai, totalPip, sisa, status };
+    }
 
     function showToast(message, isError = false) {
       const wrap = document.getElementById('toast-container');
@@ -1505,21 +1601,33 @@
           state.kelas = [...previewStore.kelas];
           state.siswa = [...previewStore.siswa];
           state.transaksi = [...previewStore.transaksi_tabungan];
+          state.bukuMapel = [...previewStore.buku_mapel];
+          state.tagihanBuku = [...previewStore.tagihan_buku];
+          state.pembayaranBuku = [...previewStore.pembayaran_buku];
         } else {
-          const [tpRes, klsRes, sisRes, txRes] = await Promise.all([
+          const [tpRes, klsRes, sisRes, txRes, bmRes, tgRes, pbRes] = await Promise.all([
             supabase.from('tahun_pelajaran').select('*').order('tahun_mulai', { ascending: false }),
             supabase.from('kelas').select('*').order('nama_kelas', { ascending: true }),
             supabase.from('siswa').select('*').order('no_urut', { ascending: true }),
-            supabase.from('transaksi_tabungan').select('*').order('tanggal', { ascending: false })
+            supabase.from('transaksi_tabungan').select('*').order('tanggal', { ascending: false }),
+            supabase.from('buku_mapel').select('*').order('created_at', { ascending: true }),
+            supabase.from('tagihan_buku').select('*'),
+            supabase.from('pembayaran_buku').select('*').order('tanggal', { ascending: false })
           ]);
           if (tpRes.error) throw tpRes.error;
           if (klsRes.error) throw klsRes.error;
           if (sisRes.error) throw sisRes.error;
           if (txRes.error) throw txRes.error;
+          if (bmRes.error) throw bmRes.error;
+          if (tgRes.error) throw tgRes.error;
+          if (pbRes.error) throw pbRes.error;
           state.tahunPelajaran = tpRes.data || [];
           state.kelas = klsRes.data || [];
           state.siswa = sisRes.data || [];
           state.transaksi = txRes.data || [];
+          state.bukuMapel = bmRes.data || [];
+          state.tagihanBuku = tgRes.data || [];
+          state.pembayaranBuku = pbRes.data || [];
         }
 
         // Pastikan activeTpId & activeKelasId valid
@@ -1571,11 +1679,21 @@
           previewStore.kelas = previewStore.kelas.filter(k => k.tahun_pelajaran_id !== id);
           previewStore.siswa = previewStore.siswa.filter(s => !klsIds.includes(s.kelas_id));
           previewStore.transaksi_tabungan = previewStore.transaksi_tabungan.filter(t => !klsIds.includes(t.kelas_id));
+          previewStore.buku_mapel = previewStore.buku_mapel.filter(m => !klsIds.includes(m.kelas_id));
+          previewStore.tagihan_buku = previewStore.tagihan_buku.filter(t => !klsIds.includes(t.kelas_id));
+          previewStore.pembayaran_buku = previewStore.pembayaran_buku.filter(p => !klsIds.includes(p.kelas_id));
         } else if (table === 'kelas') {
           previewStore.siswa = previewStore.siswa.filter(s => s.kelas_id !== id);
           previewStore.transaksi_tabungan = previewStore.transaksi_tabungan.filter(t => t.kelas_id !== id);
+          previewStore.buku_mapel = previewStore.buku_mapel.filter(m => m.kelas_id !== id);
+          previewStore.tagihan_buku = previewStore.tagihan_buku.filter(t => t.kelas_id !== id);
+          previewStore.pembayaran_buku = previewStore.pembayaran_buku.filter(p => p.kelas_id !== id);
         } else if (table === 'siswa') {
           previewStore.transaksi_tabungan = previewStore.transaksi_tabungan.filter(t => t.siswa_id !== id);
+          previewStore.tagihan_buku = previewStore.tagihan_buku.filter(t => t.siswa_id !== id);
+          previewStore.pembayaran_buku = previewStore.pembayaran_buku.filter(p => p.siswa_id !== id);
+        } else if (table === 'buku_mapel') {
+          previewStore.tagihan_buku = previewStore.tagihan_buku.filter(t => t.buku_mapel_id !== id);
         }
         return;
       }
@@ -1657,6 +1775,7 @@
         peranak: 'Rekap Per Anak',
         bulanan: 'Rekap Bulanan (1–31)',
         tahunan: 'Rekap Tahunan (Jul–Jun)',
+        buku: 'Pembayaran Buku Siswa',
         kelola: 'Kelola Data & HP'
       };
       document.getElementById('page-heading').textContent = titles[viewName] || 'Dashboard';
@@ -1669,6 +1788,7 @@
       else if (state.view === 'peranak') renderPerAnak(container);
       else if (state.view === 'bulanan') renderBulanan(container);
       else if (state.view === 'tahunan') renderTahunan(container);
+      else if (state.view === 'buku') renderBukuSiswa(container);
       else if (state.view === 'kelola') renderKelola(container);
     }
 
@@ -2017,7 +2137,6 @@
       const siswaList = getSiswaAktifKelas();
       const txBulan = getTxAktifKelas().filter(t => (t.tanggal || '').startsWith(ymPrefix));
 
-      // Peta: cellMap[siswa_id][day] = { sum, list }
       const cellMap = {};
       const dayTotals = Array(daysInMonth + 1).fill(0);
       let grandTotal = 0;
@@ -2238,7 +2357,6 @@
         exportBulananExcel(kls, tp, bObj, year, daysInMonth, siswaList, cellMap);
       };
 
-      // Hapus semua isian 1 hari (semua siswa di tanggal tertentu)
       const confirmDeleteOneDay = (dayNum) => {
         const dayStr = String(dayNum).padStart(2, '0');
         const isoDate = `${ymPrefix}-${dayStr}`;
@@ -2297,7 +2415,6 @@
         };
       };
 
-      // Hapus semua isian 1 bulan penuh
       document.getElementById('btn-del-bulan-bulanan').onclick = () => {
         if (!txBulan.length) {
           showToast(`Belum ada isian tabungan pada bulan ${bObj.name} ${year}.`, true);
@@ -2315,7 +2432,6 @@
         );
       };
 
-      // Klik header tanggal (1-31) untuk hapus cepat 1 hari
       container.querySelectorAll('[data-header-day]').forEach(th => {
         th.onclick = () => {
           const d = Number(th.dataset.headerDay);
@@ -2327,7 +2443,6 @@
         delFilteredBtn.onclick = () => confirmDeleteOneDay(activeFilterDay);
       }
 
-      // Klik sel matriks atau chip kartu -> langsung buka modal edit/tambah untuk siswa & tanggal tersebut
       container.querySelectorAll('[data-cell-sis][data-cell-day]').forEach(el => {
         el.onclick = () => {
           const sisId = el.dataset.cellSis;
@@ -2361,7 +2476,6 @@
       const monthTotals = Array(12).fill(0);
       let grandTotal = 0;
 
-      // matrix[siswa_id][monthIdx] = sum
       const matrix = {};
       siswaList.forEach(s => { matrix[s.id] = Array(12).fill(0); });
 
@@ -2519,7 +2633,662 @@
     }
 
     // =====================================================================
-    // 5. VIEW: KELOLA DATA (SISWA, KELAS, TAHUN PELAJARAN, NAIK KELAS & PWA)
+    // 5. VIEW: PEMBAYARAN BUKU SISWA (MAPEL, TUNAI / CICIL / POTONG PIP)
+    // =====================================================================
+    function renderBukuSiswa(container) {
+      const tp = getActiveTp();
+      const kls = getActiveKelas();
+      if (!tp || !kls) {
+        container.innerHTML = `<div class="glass-card empty-state"><h3>Belum Ada Kelas Terpilih</h3><p>Pilih atau buat Tahun Pelajaran &amp; Kelas terlebih dahulu.</p></div>`;
+        return;
+      }
+
+      const siswaList = getSiswaAktifKelas();
+      const mapelList = getBukuMapelAktif();
+
+      container.innerHTML = `
+        <div class="sub-tabs no-print">
+          <button class="sub-tab ${state.bukuTab === 'tagihan' ? 'active' : ''}" data-btab="tagihan">💳 Tagihan &amp; Pembayaran</button>
+          <button class="sub-tab ${state.bukuTab === 'mapel' ? 'active' : ''}" data-btab="mapel">📚 Atur Daftar Buku / Mapel (${mapelList.length})</button>
+        </div>
+        <div id="buku-panel"></div>
+      `;
+
+      container.querySelectorAll('[data-btab]').forEach(btn => {
+        btn.onclick = () => {
+          state.bukuTab = btn.dataset.btab;
+          renderBukuSiswa(container);
+        };
+      });
+
+      const panel = document.getElementById('buku-panel');
+
+      if (state.bukuTab === 'mapel') {
+        panel.innerHTML = `
+          <div class="glass-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Daftar Buku / Mapel — ${escapeHtml(kls.nama_kelas)}</div>
+                <div style="font-size:12px; color:var(--text-muted);">Atur nama buku/LKS dan harganya untuk kelas ini</div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                ${mapelList.length && siswaList.length ? `<button class="btn btn-soft btn-sm" id="btn-apply-all-mapel">🔄 Terapkan ke Semua Siswa</button>` : ''}
+                <button class="btn btn-primary btn-sm" id="btn-add-mapel">+ Tambah Buku / Mapel</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0;">
+              ${mapelList.length === 0 ? `
+                <div class="empty-state">
+                  <div style="font-size:34px;">📚</div>
+                  <h3>Belum Ada Daftar Buku / Mapel</h3>
+                  <p>Tambahkan nama buku atau LKS beserta harganya (misal: LKS Matematika Rp 15.000) untuk mulai menagih siswa.</p>
+                  <button class="btn btn-primary btn-sm" id="btn-empty-add-mapel">+ Tambah Buku Pertama</button>
+                </div>
+              ` : `
+                <div class="table-wrap" style="border:none; border-radius:0;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th style="width:55px;">No</th>
+                        <th>Nama Buku / Mata Pelajaran</th>
+                        <th>Harga Satuan</th>
+                        <th>Siswa Tertagih</th>
+                        <th style="text-align:right;">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${mapelList.map((m, idx) => {
+                        const jmlSiswa = getTagihanBukuAktif().filter(t => t.buku_mapel_id === m.id).length;
+                        return `
+                          <tr>
+                            <td style="font-weight:700;">${idx + 1}</td>
+                            <td style="font-weight:800; color:var(--leaf-900);">${escapeHtml(m.nama_mapel)}</td>
+                            <td style="font-weight:700; color:var(--leaf-700);">${fmtRp(m.harga)}</td>
+                            <td><span class="badge badge-green">${jmlSiswa} / ${siswaList.length} Siswa</span></td>
+                            <td style="text-align:right; white-space:nowrap;">
+                              <button class="btn btn-soft btn-sm" data-edit-mapel="${m.id}">Edit</button>
+                              <button class="btn btn-danger btn-sm" data-del-mapel="${m.id}">Hapus</button>
+                            </td>
+                          </tr>
+                        `;
+                      }).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+
+        const openAdd = () => openBukuMapelModal();
+        document.getElementById('btn-add-mapel').onclick = openAdd;
+        const emptyAdd = document.getElementById('btn-empty-add-mapel');
+        if (emptyAdd) emptyAdd.onclick = openAdd;
+
+        const applyAllBtn = document.getElementById('btn-apply-all-mapel');
+        if (applyAllBtn) {
+          applyAllBtn.onclick = async () => {
+            const existingPairs = new Set(getTagihanBukuAktif().map(t => `${t.siswa_id}|${t.buku_mapel_id}`));
+            const toInsert = [];
+            siswaList.forEach(s => {
+              mapelList.forEach(m => {
+                if (!existingPairs.has(`${s.id}|${m.id}`)) {
+                  toInsert.push({
+                    kelas_id: state.activeKelasId,
+                    siswa_id: s.id,
+                    buku_mapel_id: m.id,
+                    harga: Number(m.harga)
+                  });
+                }
+              });
+            });
+            if (!toInsert.length) {
+              showToast('Seluruh siswa sudah memiliki semua tagihan buku aktif.');
+              return;
+            }
+            applyAllBtn.disabled = true;
+            try {
+              await dbInsert('tagihan_buku', toInsert);
+              showToast(`${toInsert.length} item tagihan buku berhasil diterapkan ke siswa!`);
+              await loadAllData();
+            } catch (err) {
+              showToast(err.message || 'Gagal menerapkan tagihan', true);
+              applyAllBtn.disabled = false;
+            }
+          };
+        }
+
+        panel.querySelectorAll('[data-edit-mapel]').forEach(btn => {
+          btn.onclick = () => {
+            const m = mapelList.find(x => x.id === btn.dataset.editMapel);
+            if (m) openBukuMapelModal(m);
+          };
+        });
+        panel.querySelectorAll('[data-del-mapel]').forEach(btn => {
+          btn.onclick = () => {
+            const m = mapelList.find(x => x.id === btn.dataset.delMapel);
+            openConfirmModal(
+              'Hapus Buku / Mapel?',
+              `Menghapus "${m?.nama_mapel}" akan menghapus item buku ini dari daftar tagihan seluruh siswa.`,
+              async () => {
+                await dbDelete('buku_mapel', m.id);
+                showToast('Buku / Mapel berhasil dihapus');
+                await loadAllData();
+              }
+            );
+          };
+        });
+        return;
+      }
+
+      // Tab 1: Tagihan & Pembayaran
+      const rekapRows = siswaList.map((s, idx) => ({
+        siswa: s,
+        no: s.no_urut || idx + 1,
+        ...getRekapBukuSiswa(s.id)
+      }));
+
+      const totalTagihanKelas = rekapRows.reduce((a, r) => a + r.totalTagihan, 0);
+      const totalBayarKelas = rekapRows.reduce((a, r) => a + r.totalBayar, 0);
+      const totalTunaiKelas = rekapRows.reduce((a, r) => a + r.totalTunai, 0);
+      const totalPipKelas = rekapRows.reduce((a, r) => a + r.totalPip, 0);
+      const totalSisaKelas = rekapRows.reduce((a, r) => a + r.sisa, 0);
+      const countLunas = rekapRows.filter(r => r.status === 'lunas').length;
+
+      const filteredRows = rekapRows.filter(r => {
+        const matchSearch = r.siswa.nama_lengkap.toLowerCase().includes(state.bukuSearch.toLowerCase());
+        const matchFilter = state.bukuFilter === 'all' || r.status === state.bukuFilter;
+        return matchSearch && matchFilter;
+      });
+
+      const statusBadgeHtml = (st) => {
+        if (st === 'lunas') return '<span class="badge badge-green">🟢 LUNAS</span>';
+        if (st === 'cicil') return '<span class="badge badge-yellow">🟡 CICIL</span>';
+        if (st === 'belum') return '<span class="badge badge-red">🔴 BELUM BAYAR</span>';
+        return '<span class="badge badge-gray">Belum Ditagih</span>';
+      };
+
+      const isMobile = window.innerWidth <= 768;
+
+      panel.innerHTML = `
+        <div class="stats-grid">
+          <div class="glass-card stat-card featured">
+            <div class="stat-label"><span>Total Tagihan Buku</span><span>📚</span></div>
+            <div class="stat-value">${fmtRp(totalTagihanKelas)}</div>
+            <div class="stat-sub">${mapelList.length} mapel • ${siswaList.length} siswa</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-label"><span>Sudah Terbayar</span><span>💵</span></div>
+            <div class="stat-value" style="color:var(--leaf-700);">${fmtRp(totalBayarKelas)}</div>
+            <div class="stat-sub">Tunai: ${fmtRp(totalTunaiKelas)} • PIP: ${fmtRp(totalPipKelas)}</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-label"><span>Sisa Tunggakan</span><span>⏳</span></div>
+            <div class="stat-value" style="color:${totalSisaKelas > 0 ? 'var(--danger)' : 'var(--leaf-700)'};">${fmtRp(totalSisaKelas)}</div>
+            <div class="stat-sub">${totalSisaKelas === 0 && totalTagihanKelas > 0 ? 'Semua lunas!' : 'Belum terbayar'}</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-label"><span>Siswa Lunas</span><span>🎓</span></div>
+            <div class="stat-value">${countLunas} <span style="font-size:14px; font-weight:600; color:var(--text-muted);">/ ${siswaList.length}</span></div>
+            <div class="stat-sub">${siswaList.length ? Math.round((countLunas / siswaList.length) * 100) : 0}% siswa lunas</div>
+          </div>
+        </div>
+
+        <div class="glass-card no-print" style="padding:14px 16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex:1;">
+            <input id="buku-search-input" class="input" style="max-width:240px;" placeholder="🔍 Cari nama siswa..." value="${escapeHtml(state.bukuSearch)}" />
+            <div class="view-mode-toggle">
+              ${[
+                { id: 'all', lbl: 'Semua' },
+                { id: 'belum', lbl: 'Belum Bayar' },
+                { id: 'cicil', lbl: 'Cicil' },
+                { id: 'lunas', lbl: 'Lunas' }
+              ].map(f => `<button type="button" class="view-mode-btn ${state.bukuFilter === f.id ? 'active' : ''}" data-bfilter="${f.id}">${f.lbl}</button>`).join('')}
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="btn-export-buku" class="btn btn-soft btn-sm">📥 Export Excel</button>
+            <button id="btn-print-buku" class="btn btn-outline btn-sm">🖨️ Cetak / PDF</button>
+          </div>
+        </div>
+
+        <div class="glass-card" style="padding:16px;">
+          ${siswaList.length === 0 ? `
+            <div class="empty-state"><h3>Belum Ada Siswa di Kelas Ini</h3><p>Tambahkan siswa terlebih dahulu di menu Kelola Data &amp; HP.</p></div>
+          ` : mapelList.length === 0 ? `
+            <div class="empty-state">
+              <div style="font-size:32px;">📘</div>
+              <h3>Daftar Buku / Mapel Belum Diatur</h3>
+              <p>Silakan buka tab <strong>"Atur Daftar Buku / Mapel"</strong> terlebih dahulu untuk menambahkan nama mapel &amp; harganya.</p>
+              <button class="btn btn-primary btn-sm" id="btn-goto-mapel-tab">Atur Daftar Buku Sekarang</button>
+            </div>
+          ` : filteredRows.length === 0 ? `
+            <div class="empty-state"><h3>Tidak Ada Data Sesuai Filter</h3></div>
+          ` : isMobile ? `
+            <div class="m-card-list">
+              ${filteredRows.map(r => {
+                const pct = r.totalTagihan > 0 ? Math.min(100, Math.round((r.totalBayar / r.totalTagihan) * 100)) : 0;
+                return `
+                  <div class="m-student-card" style="cursor:pointer;" data-open-buku-sis="${r.siswa.id}">
+                    <div class="m-card-head">
+                      <div class="m-card-ident">
+                        <div class="m-card-no">${r.no}</div>
+                        <div style="min-width:0;">
+                          <div class="m-card-name">${escapeHtml(r.siswa.nama_lengkap)}</div>
+                          <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                            ${r.tagihanList.length ? r.tagihanList.map(t => escapeHtml(t.nama_mapel)).join(', ') : 'Belum ada mapel dipilih'}
+                          </div>
+                        </div>
+                      </div>
+                      ${statusBadgeHtml(r.status)}
+                    </div>
+                    <div class="buku-progress-bar"><div class="buku-progress-fill" style="width:${pct}%;"></div></div>
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; font-size:11.5px; padding-top:4px;">
+                      <div><span style="color:var(--text-muted); display:block;">Tagihan</span><strong>${fmtRp(r.totalTagihan)}</strong></div>
+                      <div><span style="color:var(--text-muted); display:block;">Terbayar</span><strong style="color:var(--leaf-700);">${fmtRp(r.totalBayar)}</strong></div>
+                      <div style="text-align:right;"><span style="color:var(--text-muted); display:block;">Sisa</span><strong style="color:${r.sisa > 0 ? 'var(--danger)' : 'var(--leaf-700)'};">${fmtRp(r.sisa)}</strong></div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : `
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width:48px;">No</th>
+                    <th>Nama Siswa</th>
+                    <th>Mapel Ditagihkan</th>
+                    <th style="text-align:right;">Total Tagihan</th>
+                    <th style="text-align:right;">Sudah Bayar</th>
+                    <th style="text-align:right;">Sisa</th>
+                    <th>Status</th>
+                    <th style="text-align:right;" class="no-print">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filteredRows.map(r => `
+                    <tr style="cursor:pointer;" data-open-buku-sis="${r.siswa.id}">
+                      <td style="font-weight:700;">${r.no}</td>
+                      <td style="font-weight:800;">${escapeHtml(r.siswa.nama_lengkap)}</td>
+                      <td style="max-width:250px;">
+                        ${r.tagihanList.length
+                          ? `<div style="display:flex; flex-wrap:wrap; gap:4px;">${r.tagihanList.map(t => `<span class="badge badge-gray" style="font-size:10.5px;">${escapeHtml(t.nama_mapel)} (${fmtCompact(t.harga_aktif)})</span>`).join('')}</div>`
+                          : '<span style="font-size:12px; color:var(--text-soft);">Belum ada mapel</span>'}
+                      </td>
+                      <td style="text-align:right; font-weight:700;">${fmtRp(r.totalTagihan)}</td>
+                      <td style="text-align:right; font-weight:700; color:var(--leaf-700);">
+                        ${fmtRp(r.totalBayar)}
+                        ${r.totalPip > 0 ? `<div style="font-size:10.5px; color:#1d4ed8;">PIP: ${fmtRp(r.totalPip)}</div>` : ''}
+                      </td>
+                      <td style="text-align:right; font-weight:800; color:${r.sisa > 0 ? 'var(--danger)' : 'var(--leaf-700)'};">${fmtRp(r.sisa)}</td>
+                      <td>${statusBadgeHtml(r.status)}</td>
+                      <td style="text-align:right; white-space:nowrap;" class="no-print">
+                        <button type="button" class="btn btn-primary btn-sm" data-open-buku-sis="${r.siswa.id}">💳 Bayar / Detail</button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      `;
+
+      const gotoMapel = document.getElementById('btn-goto-mapel-tab');
+      if (gotoMapel) gotoMapel.onclick = () => { state.bukuTab = 'mapel'; renderBukuSiswa(container); };
+
+      const searchInp = document.getElementById('buku-search-input');
+      if (searchInp) {
+        searchInp.oninput = (e) => {
+          state.bukuSearch = e.target.value;
+          renderBukuSiswa(container);
+          const next = document.getElementById('buku-search-input');
+          if (next) { next.focus(); next.setSelectionRange(next.value.length, next.value.length); }
+        };
+      }
+      panel.querySelectorAll('[data-bfilter]').forEach(btn => {
+        btn.onclick = () => {
+          state.bukuFilter = btn.dataset.bfilter;
+          renderBukuSiswa(container);
+        };
+      });
+      const printBtn = document.getElementById('btn-print-buku');
+      if (printBtn) printBtn.onclick = () => window.print();
+      const expBtn = document.getElementById('btn-export-buku');
+      if (expBtn) expBtn.onclick = () => exportBukuSiswaExcel(kls, tp, rekapRows);
+
+      panel.querySelectorAll('[data-open-buku-sis]').forEach(el => {
+        el.onclick = (e) => {
+          e.stopPropagation();
+          openStudentBukuModal(el.dataset.openBukuSis);
+        };
+      });
+    }
+
+    function openBukuMapelModal(mapel = null) {
+      const isEdit = !!mapel;
+      openModal({
+        title: isEdit ? 'Edit Buku / Mapel' : 'Tambah Buku / Mapel Baru',
+        bodyHtml: `
+          <div class="form-group" style="margin-top:0;">
+            <label class="field-label">Nama Buku / Mata Pelajaran</label>
+            <input id="bm-nama" type="text" class="input" placeholder="Contoh: LKS Matematika" value="${escapeHtml(mapel?.nama_mapel || '')}" />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Harga Buku (Rp)</label>
+            <input id="bm-harga" type="number" min="500" step="500" class="input" placeholder="Contoh: 15000" value="${mapel ? mapel.harga : ''}" />
+            <div class="nominal-chips">
+              ${[10000, 12000, 15000, 20000, 25000].map(n => `<button type="button" class="chip-btn" data-bm-chip="${n}">${n / 1000}rb</button>`).join('')}
+            </div>
+          </div>
+          ${!isEdit ? `
+            <div class="form-group">
+              <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-main); cursor:pointer;">
+                <input type="checkbox" id="bm-auto-assign" checked />
+                Langsung tagihkan buku ini ke seluruh siswa di kelas ini
+              </label>
+            </div>
+          ` : ''}
+        `,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="bm-cancel">Batal</button>
+          <button type="button" class="btn btn-primary" id="bm-save">Simpan Buku</button>
+        `
+      });
+
+      document.querySelectorAll('[data-bm-chip]').forEach(c => {
+        c.onclick = () => { document.getElementById('bm-harga').value = c.dataset.bmChip; };
+      });
+      document.getElementById('bm-cancel').onclick = closeModal;
+      document.getElementById('bm-save').onclick = async () => {
+        const nama_mapel = document.getElementById('bm-nama').value.trim();
+        const harga = Number(document.getElementById('bm-harga').value);
+        if (!nama_mapel || !harga || harga <= 0) {
+          showToast('Isi nama buku/mapel dan harga yang valid', true);
+          return;
+        }
+        const btn = document.getElementById('bm-save');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
+        try {
+          if (isEdit) {
+            await dbUpdate('buku_mapel', mapel.id, { nama_mapel, harga });
+            const related = getTagihanBukuAktif().filter(t => t.buku_mapel_id === mapel.id);
+            for (const tg of related) {
+              await dbUpdate('tagihan_buku', tg.id, { harga });
+            }
+            showToast('Buku / Mapel berhasil diperbarui');
+          } else {
+            const ins = await dbInsert('buku_mapel', { kelas_id: state.activeKelasId, nama_mapel, harga });
+            const newMapelId = ins?.[0]?.id;
+            const autoAssign = document.getElementById('bm-auto-assign')?.checked;
+            const siswaList = getSiswaAktifKelas();
+            if (autoAssign && newMapelId && siswaList.length) {
+              const tagihanRows = siswaList.map(s => ({
+                kelas_id: state.activeKelasId,
+                siswa_id: s.id,
+                buku_mapel_id: newMapelId,
+                harga
+              }));
+              await dbInsert('tagihan_buku', tagihanRows);
+            }
+            showToast('Buku / Mapel berhasil ditambahkan');
+          }
+          closeModal();
+          await loadAllData();
+        } catch (err) {
+          showToast(err.message || 'Gagal menyimpan buku', true);
+          btn.disabled = false;
+          btn.textContent = 'Simpan Buku';
+        }
+      };
+    }
+
+    function openStudentBukuModal(siswaId, editBayarId = null) {
+      const sis = state.siswa.find(s => s.id === siswaId);
+      if (!sis) return;
+      const mapelList = getBukuMapelAktif();
+      const rekap = getRekapBukuSiswa(siswaId);
+      const takenMap = Object.fromEntries(rekap.tagihanList.map(t => [t.buku_mapel_id, t]));
+      const editPay = editBayarId ? rekap.bayarList.find(p => p.id === editBayarId) : null;
+
+      const statusText = rekap.status === 'lunas' ? '🟢 LUNAS'
+        : (rekap.status === 'cicil' ? '🟡 CICIL'
+        : (rekap.status === 'belum' ? '🔴 BELUM BAYAR' : 'Belum Ditagih'));
+      const pct = rekap.totalTagihan > 0 ? Math.min(100, Math.round((rekap.totalBayar / rekap.totalTagihan) * 100)) : 0;
+
+      openModal({
+        title: `Pembayaran Buku — ${sis.nama_lengkap}`,
+        wide: true,
+        bodyHtml: `
+          <div style="padding:14px; border-radius:14px; background:var(--leaf-50); border:1px solid var(--border-glass); margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+              <div style="font-size:13px; font-weight:800; color:var(--leaf-900);">Ringkasan Tagihan Buku</div>
+              <span class="badge ${rekap.status === 'lunas' ? 'badge-green' : (rekap.status === 'cicil' ? 'badge-yellow' : 'badge-red')}">${statusText}</span>
+            </div>
+            <div class="buku-progress-bar" style="margin-bottom:10px;"><div class="buku-progress-fill" style="width:${pct}%;"></div></div>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; font-size:12.5px;">
+              <div><span style="color:var(--text-muted); display:block;">Total Tagihan</span><strong style="font-size:14px;">${fmtRp(rekap.totalTagihan)}</strong></div>
+              <div><span style="color:var(--text-muted); display:block;">Sudah Dibayar</span><strong style="font-size:14px; color:var(--leaf-700);">${fmtRp(rekap.totalBayar)}</strong></div>
+              <div style="text-align:right;"><span style="color:var(--text-muted); display:block;">Sisa Tunggakan</span><strong style="font-size:14px; color:${rekap.sisa > 0 ? 'var(--danger)' : 'var(--leaf-700)'};">${fmtRp(rekap.sisa)}</strong></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <div style="font-size:13px; font-weight:800; color:var(--leaf-900); margin-bottom:6px;">1. Daftar Buku / Mapel yang Diambil Siswa</div>
+            <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:8px;">Centang atau hapus centang jika siswa tidak membeli mapel tertentu:</p>
+            <div class="buku-check-list">
+              ${mapelList.map(m => {
+                const tg = takenMap[m.id];
+                const isChecked = !!tg;
+                return `
+                  <label class="buku-check-item ${isChecked ? 'checked' : ''}">
+                    <span style="display:flex; align-items:center; gap:9px; font-weight:700; font-size:13px;">
+                      <input type="checkbox" class="buku-mapel-chk" data-mapel-id="${m.id}" data-tagihan-id="${tg?.id || ''}" data-harga="${m.harga}" ${isChecked ? 'checked' : ''} />
+                      ${escapeHtml(m.nama_mapel)}
+                    </span>
+                    <strong style="color:var(--leaf-800); font-size:13px;">${fmtRp(m.harga)}</strong>
+                  </label>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div style="padding:14px; border-radius:14px; background:#fff; border:1px solid var(--border-glass); margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <div style="font-size:13px; font-weight:800; color:var(--leaf-900);">
+                ${editPay ? '✏️ Edit Riwayat Pembayaran' : '2. Catat Pembayaran / Cicilan Baru'}
+              </div>
+              ${editPay ? `<button type="button" class="btn btn-outline btn-sm" id="btn-cancel-edit-pay">Batal Edit</button>` : ''}
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div>
+                <label class="field-label">Tanggal Bayar</label>
+                <input id="pb-tanggal" type="date" class="input" value="${editPay ? editPay.tanggal : todayISO()}" />
+              </div>
+              <div>
+                <label class="field-label">Metode Pembayaran</label>
+                <select id="pb-metode" class="select">
+                  <option value="tunai" ${(!editPay || editPay.metode !== 'pip') ? 'selected' : ''}>💵 Tunai / Cicil Tunai</option>
+                  <option value="pip" ${(editPay && editPay.metode === 'pip') ? 'selected' : ''}>🏦 Potong dari PIP</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+              <label class="field-label">Nominal Pembayaran (Rp)</label>
+              <input id="pb-nominal" type="number" min="500" step="500" class="input" placeholder="Masukkan nominal cicilan / lunas" value="${editPay ? editPay.nominal : ''}" />
+              <div class="nominal-chips">
+                ${[5000, 10000, 15000, 20000, 50000].map(n => `<button type="button" class="chip-btn" data-pb-chip="${n}">${n / 1000}rb</button>`).join('')}
+                ${rekap.sisa > 0 ? `<button type="button" class="chip-btn" style="background:var(--leaf-600); color:#fff; border-color:var(--leaf-700);" data-pb-chip="${rekap.sisa}">⚡ Lunasi Sisa (${fmtRp(rekap.sisa)})</button>` : ''}
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+              <label class="field-label">Keterangan (Opsional)</label>
+              <input id="pb-ket" type="text" class="input" placeholder="Misal: Cicilan ke-1, Potong PIP Tahap 1, Lunas" value="${escapeHtml(editPay?.keterangan || '')}" />
+            </div>
+            <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+              <button type="button" class="btn btn-primary btn-sm" id="btn-save-pb">${editPay ? 'Simpan Perubahan' : '💾 Simpan Pembayaran'}</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:13px; font-weight:800; color:var(--leaf-900); margin-bottom:8px;">3. Riwayat Pembayaran / Cicilan (${rekap.bayarList.length})</div>
+            ${rekap.bayarList.length === 0 ? `
+              <p style="font-size:12.5px; color:var(--text-soft); text-align:center; padding:12px 0;">Belum ada pembayaran tercatat untuk siswa ini.</p>
+            ` : `
+              <div class="tx-list">
+                ${rekap.bayarList.map(p => `
+                  <div class="tx-row" style="cursor:default;">
+                    <div class="tx-left">
+                      <div class="tx-dot setor">${p.metode === 'pip' ? '🏦' : '💵'}</div>
+                      <div style="min-width:0;">
+                        <div class="tx-name">
+                          ${fmtRp(p.nominal)}
+                          <span class="badge ${p.metode === 'pip' ? 'badge-blue' : 'badge-green'}" style="margin-left:5px;">${p.metode === 'pip' ? 'Potong PIP' : 'Tunai'}</span>
+                        </div>
+                        <div class="tx-meta">${p.tanggal}${p.keterangan ? ' • ' + escapeHtml(p.keterangan) : ''}</div>
+                      </div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                      <button type="button" class="btn btn-soft btn-sm" data-edit-pb="${p.id}">Edit</button>
+                      <button type="button" class="btn btn-danger btn-sm" data-del-pb="${p.id}">Hapus</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        `,
+        footHtml: `<button type="button" class="btn btn-outline" id="pb-close-modal">Tutup</button>`
+      });
+
+      document.getElementById('pb-close-modal').onclick = closeModal;
+      const cancelEditBtn = document.getElementById('btn-cancel-edit-pay');
+      if (cancelEditBtn) cancelEditBtn.onclick = () => openStudentBukuModal(siswaId, null);
+
+      document.querySelectorAll('[data-pb-chip]').forEach(c => {
+        c.onclick = () => {
+          document.getElementById('pb-nominal').value = c.dataset.pbChip;
+          if (Number(c.dataset.pbChip) === rekap.sisa && !document.getElementById('pb-ket').value.trim()) {
+            document.getElementById('pb-ket').value = 'Pelunasan buku';
+          }
+        };
+      });
+
+      // Toggle checklist mapel siswa
+      document.querySelectorAll('.buku-mapel-chk').forEach(chk => {
+        chk.onchange = async () => {
+          chk.disabled = true;
+          try {
+            if (chk.checked) {
+              await dbInsert('tagihan_buku', {
+                kelas_id: state.activeKelasId,
+                siswa_id: siswaId,
+                buku_mapel_id: chk.dataset.mapelId,
+                harga: Number(chk.dataset.harga)
+              });
+              showToast('Mapel ditambahkan ke tagihan siswa');
+            } else if (chk.dataset.tagihanId) {
+              await dbDelete('tagihan_buku', chk.dataset.tagihanId);
+              showToast('Mapel dihapus dari tagihan siswa');
+            }
+            await loadAllData();
+            openStudentBukuModal(siswaId, editBayarId);
+          } catch (err) {
+            showToast(err.message || 'Gagal memperbarui tagihan mapel', true);
+            chk.disabled = false;
+          }
+        };
+      });
+
+      // Simpan pembayaran baru / edit pembayaran
+      document.getElementById('btn-save-pb').onclick = async () => {
+        const tanggal = document.getElementById('pb-tanggal').value;
+        const metode = document.getElementById('pb-metode').value;
+        const nominal = Number(document.getElementById('pb-nominal').value);
+        const keterangan = document.getElementById('pb-ket').value.trim();
+
+        if (!tanggal || !nominal || nominal <= 0) {
+          showToast('Isi tanggal dan nominal pembayaran yang valid', true);
+          return;
+        }
+        const btn = document.getElementById('btn-save-pb');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
+        try {
+          if (editPay) {
+            await dbUpdate('pembayaran_buku', editPay.id, { tanggal, metode, nominal, keterangan });
+            showToast('Riwayat pembayaran diperbarui');
+          } else {
+            await dbInsert('pembayaran_buku', {
+              kelas_id: state.activeKelasId,
+              siswa_id: siswaId,
+              tanggal,
+              metode,
+              nominal,
+              keterangan
+            });
+            showToast('Pembayaran buku berhasil dicatat');
+          }
+          await loadAllData();
+          openStudentBukuModal(siswaId, null);
+        } catch (err) {
+          showToast(err.message || 'Gagal menyimpan pembayaran', true);
+          btn.disabled = false;
+          btn.textContent = editPay ? 'Simpan Perubahan' : '💾 Simpan Pembayaran';
+        }
+      };
+
+      document.querySelectorAll('[data-edit-pb]').forEach(btn => {
+        btn.onclick = () => openStudentBukuModal(siswaId, btn.dataset.editPb);
+      });
+      document.querySelectorAll('[data-del-pb]').forEach(btn => {
+        btn.onclick = async () => {
+          try {
+            await dbDelete('pembayaran_buku', btn.dataset.delPb);
+            showToast('Riwayat pembayaran dihapus');
+            await loadAllData();
+            openStudentBukuModal(siswaId, null);
+          } catch (err) {
+            showToast(err.message || 'Gagal menghapus pembayaran', true);
+          }
+        };
+      });
+    }
+
+    function exportBukuSiswaExcel(kls, tp, rekapRows) {
+      if (typeof XLSX === 'undefined') { showToast('Library Excel belum siap', true); return; }
+      const header = ['NO', 'NAMA SISWA', 'MAPEL DITAGIHKAN', 'TOTAL TAGIHAN', 'BAYAR TUNAI', 'POTONG PIP', 'TOTAL TERBAYAR', 'SISA TUNGGAKAN', 'STATUS'];
+      const data = [
+        [`REKAP PEMBAYARAN BUKU SISWA ${kls.nama_kelas} - TP ${tp.nama}`],
+        [],
+        header
+      ];
+      rekapRows.forEach(r => {
+        const stLabel = r.status === 'lunas' ? 'LUNAS' : (r.status === 'cicil' ? 'CICIL' : (r.status === 'belum' ? 'BELUM BAYAR' : 'BELUM DITAGIH'));
+        data.push([
+          r.no,
+          r.siswa.nama_lengkap,
+          r.tagihanList.map(t => `${t.nama_mapel} (${t.harga_aktif})`).join(', ') || '-',
+          r.totalTagihan,
+          r.totalTunai,
+          r.totalPip,
+          r.totalBayar,
+          r.sisa,
+          stLabel
+        ]);
+      });
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, ws, 'Pembayaran Buku');
+      XLSX.writeFile(wb, `Rekap_Buku_Siswa_${kls.nama_kelas}_TP_${tp.nama.replace('/', '-')}.xlsx`);
+      showToast('Rekap Pembayaran Buku berhasil diekspor ke Excel');
+    }
+
+    // =====================================================================
+    // 6. VIEW: KELOLA DATA (SISWA, KELAS, TAHUN PELAJARAN, NAIK KELAS & PWA)
     // =====================================================================
     function renderKelola(container) {
       const tp = getActiveTp();
@@ -2641,7 +3410,7 @@
         panel.querySelectorAll('[data-del-sis]').forEach(b => {
           b.onclick = () => {
             const s = state.siswa.find(x => x.id === b.dataset.delSis);
-            openConfirmModal('Hapus Siswa?', `Menghapus "${s?.nama_lengkap}" juga akan menghapus seluruh riwayat tabungannya di kelas ini.`, async () => {
+            openConfirmModal('Hapus Siswa?', `Menghapus "${s?.nama_lengkap}" juga akan menghapus seluruh riwayat tabungan dan tagihan bukunya di kelas ini.`, async () => {
               await dbDelete('siswa', s.id);
               showToast('Siswa berhasil dihapus');
               await loadAllData();
@@ -2761,7 +3530,7 @@
                       ${draft.entries.slice(0, 60).map(it => `
                         <tr>
                           <td style="font-weight:700;">${escapeHtml(it.nama_lengkap)}</td>
-                          <td>${it.syncStatus === 'skip' ? '<span class="badge badge-gray">Sudah Ada (Dilewati)</span>' : (it.syncStatus === 'update' ? '<span class="badge" style="background:var(--warning-bg);color:var(--warning);">Diperbarui</span>' : (it.isNewStudent ? '<span class="badge badge-green">Baru (+Siswa)</span>' : '<span class="badge badge-green">Baru</span>'))}</td>
+                          <td>${it.syncStatus === 'skip' ? '<span class="badge badge-gray">Sudah Ada (Dilewati)</span>' : (it.syncStatus === 'update' ? '<span class="badge badge-yellow">Diperbarui</span>' : (it.isNewStudent ? '<span class="badge badge-green">Baru (+Siswa)</span>' : '<span class="badge badge-green">Baru</span>'))}</td>
                           <td>${it.tanggal}</td>
                           <td><span class="badge ${it.jenis === 'tarik' ? 'badge-red' : 'badge-green'}">${it.jenis === 'tarik' ? 'Penarikan' : 'Setoran'}</span></td>
                           <td style="text-align:right; font-weight:700;">${fmtRp(it.nominal)}</td>
@@ -2864,7 +3633,7 @@
         panel.querySelectorAll('[data-del-kls]').forEach(b => {
           b.onclick = () => {
             const k = state.kelas.find(x => x.id === b.dataset.delKls);
-            openConfirmModal('Hapus Kelas?', `Menghapus "${k?.nama_kelas}" akan menghapus semua siswa dan transaksi di dalamnya.`, async () => {
+            openConfirmModal('Hapus Kelas?', `Menghapus "${k?.nama_kelas}" akan menghapus semua siswa, tabungan, dan data buku di dalamnya.`, async () => {
               await dbDelete('kelas', k.id);
               showToast('Kelas dihapus');
               await loadAllData();
@@ -2935,7 +3704,7 @@
         panel.querySelectorAll('[data-del-tp]').forEach(b => {
           b.onclick = () => {
             const t = state.tahunPelajaran.find(x => x.id === b.dataset.delTp);
-            openConfirmModal('Hapus Tahun Pelajaran?', `Semua kelas, siswa, dan transaksi di TP ${t?.nama} akan ikut terhapus permanen.`, async () => {
+            openConfirmModal('Hapus Tahun Pelajaran?', `Semua kelas, siswa, transaksi, dan data buku di TP ${t?.nama} akan ikut terhapus permanen.`, async () => {
               await dbDelete('tahun_pelajaran', t.id);
               showToast('Tahun Pelajaran dihapus');
               await loadAllData();
@@ -3412,7 +4181,6 @@
       };
     }
 
-    // Modal Setup Cepat: otomatis muncul jika user klik Tambah/Impor Siswa saat TP atau Kelas belum dibuat
     function openQuickSetupKelasModal(onDone = null) {
       const hasTp = !!state.activeTpId;
       const defYear = new Date().getFullYear();
@@ -3643,7 +4411,6 @@
         existingByKey.get(key).push(tx);
       });
 
-      // Cegah duplikasi internal jika ada baris siswa + tanggal yang sama di dalam 1 file Excel
       const dedupMap = new Map();
       entries.forEach(it => {
         dedupMap.set(`${it.nama_lengkap}|${it.tanggal}`, it);
@@ -3700,9 +4467,8 @@
           const daysInMonth = new Date(year, bObj.month, 0).getDate();
           const ymPrefix = `${year}-${String(bObj.month).padStart(2, '0')}`;
 
-          // Cari baris header tanggal (1, 2, 3...)
           let headerRowIdx = -1;
-          let dayColMap = {}; // dayNumber -> colIdx
+          let dayColMap = {};
           let nameColIdx = 1;
 
           for (let r = 0; r < Math.min(rows.length, 15); r++) {
@@ -3766,9 +4532,8 @@
             }
           }
         } else {
-          // Format Rekap Per Bulan (Juli - Juni)
           let headerRowIdx = -1;
-          let monthColMap = {}; // monthIdx (0..11) -> colIdx
+          let monthColMap = {};
           let nameColIdx = 1;
 
           for (let r = 0; r < Math.min(rows.length, 15); r++) {
@@ -3889,7 +4654,6 @@
         });
       }
 
-      // Kelompokkan transaksi eksisting berdasarkan (siswa_id + tanggal) untuk mencegah data ganda
       const existingByKey = new Map();
       getTxAktifKelas().forEach(tx => {
         const key = `${tx.siswa_id}|${tx.tanggal}`;
@@ -3913,11 +4677,9 @@
         if (matches.length > 0) {
           const existingNet = matches.reduce((a, t) => a + signedNominal(t), 0);
           if (existingNet === incomingNet) {
-            // Data identik sudah ada -> lewati agar tidak ganda
             skippedCount++;
             continue;
           }
-          // Nominal berubah -> perbarui data eksisting tanpa menambah baris ganda
           if (matches.length === 1) {
             await dbUpdate('transaksi_tabungan', matches[0].id, {
               jenis: it.jenis,
@@ -4094,7 +4856,7 @@
                   ${draft.entries.slice(0, 60).map(it => `
                     <tr>
                       <td style="font-weight:700;">${escapeHtml(it.nama_lengkap)}</td>
-                      <td>${it.syncStatus === 'skip' ? '<span class="badge badge-gray">Sudah Ada (Dilewati)</span>' : (it.syncStatus === 'update' ? '<span class="badge" style="background:var(--warning-bg);color:var(--warning);">Diperbarui</span>' : (it.isNewStudent ? '<span class="badge badge-green">Baru (+Siswa)</span>' : '<span class="badge badge-green">Baru</span>'))}</td>
+                      <td>${it.syncStatus === 'skip' ? '<span class="badge badge-gray">Sudah Ada (Dilewati)</span>' : (it.syncStatus === 'update' ? '<span class="badge badge-yellow">Diperbarui</span>' : (it.isNewStudent ? '<span class="badge badge-green">Baru (+Siswa)</span>' : '<span class="badge badge-green">Baru</span>'))}</td>
                       <td>${it.tanggal}</td>
                       <td><span class="badge ${it.jenis === 'tarik' ? 'badge-red' : 'badge-green'}">${it.jenis === 'tarik' ? 'Penarikan' : 'Setoran'}</span></td>
                       <td style="text-align:right; font-weight:700;">${fmtRp(it.nominal)}</td>
@@ -4205,7 +4967,6 @@
     }
 
     async function bootstrap() {
-      // Aturan ketat IS_PREVIEW: tampilkan elemen preview HANYA jika IS_PREVIEW === true
       if (IS_PREVIEW) {
         document.getElementById('preview-banner').style.display = 'flex';
         document.getElementById('preview-quick-login-wrap').style.display = 'block';
@@ -4215,14 +4976,12 @@
         document.getElementById('preview-quick-login-wrap')?.remove();
       }
 
-      // Responsive tombol logout mobile
       const syncMobileLogout = () => {
         document.getElementById('btn-logout-mobile').style.display = window.innerWidth <= 768 ? 'inline-flex' : 'none';
       };
       syncMobileLogout();
       window.addEventListener('resize', syncMobileLogout);
 
-      // Event listeners global
       document.getElementById('login-form').onsubmit = async (e) => {
         e.preventDefault();
         const errBox = document.getElementById('login-error');
@@ -4277,7 +5036,6 @@
         if (e.target.id === 'app-modal') closeModal();
       };
 
-      // Cek sesi aktif Supabase saat produksi
       if (!IS_PREVIEW) {
         try {
           const { data } = await supabase.auth.getSession();
