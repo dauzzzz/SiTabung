@@ -1064,7 +1064,6 @@
     const IS_PREVIEW = false; // Ubah menjadi false SAAT DEPLOY agar mode preview & data dummy hilang dan terhubung 100% ke Supabase
     const SUPABASE_URL = "https://oohzibxlgujgldwozyby.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_aMth-oupHS1vhLBUZS62Dg_XnmMGQNi";
-
     // Inisialisasi client Supabase hanya saat produksi (IS_PREVIEW === false)
     const supabase = !IS_PREVIEW ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -1992,14 +1991,21 @@
               </div>
               <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button class="btn btn-outline btn-sm" id="btn-template-siswa">📄 Template Excel Siswa</button>
-                <button class="btn btn-outline btn-sm" id="btn-import-excel" ${!kls ? 'disabled' : ''}>📤 Import Excel</button>
-                <button class="btn btn-soft btn-sm" id="btn-salin-siswa" ${!siswaList.length ? 'disabled' : ''}>🚀 Naik Kelas / Salin</button>
-                <button class="btn btn-primary btn-sm" id="btn-add-siswa" ${!kls ? 'disabled' : ''}>+ Tambah Siswa</button>
+                <button class="btn btn-outline btn-sm" id="btn-import-excel">📤 Import Excel</button>
+                <button class="btn btn-soft btn-sm" id="btn-salin-siswa">🚀 Naik Kelas / Salin</button>
+                <button class="btn btn-primary btn-sm" id="btn-add-siswa">+ Tambah Siswa</button>
               </div>
               <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" style="display:none;" />
             </div>
             <div class="card-body" style="padding:0;">
-              ${siswaList.length === 0 ? `
+              ${!kls ? `
+                <div class="empty-state">
+                  <div style="font-size:32px;">🏫</div>
+                  <h3>Belum Ada Tahun Pelajaran &amp; Kelas Aktif</h3>
+                  <p>Buat Tahun Pelajaran dan Kelas pertama Anda terlebih dahulu agar dapat menambahkan atau mengimpor data siswa.</p>
+                  <button class="btn btn-primary btn-sm" id="btn-quick-setup-siswa">⚡ Buat Tahun Pelajaran &amp; Kelas</button>
+                </div>
+              ` : siswaList.length === 0 ? `
                 <div class="empty-state">
                   <h3>Belum Ada Siswa di Kelas Ini</h3>
                   <p>Tambahkan siswa satu per satu atau impor langsung dari file Excel daftar siswa Anda.</p>
@@ -2033,10 +2039,37 @@
           </div>
         `;
 
-        document.getElementById('btn-add-siswa').onclick = () => openSiswaModal();
-        document.getElementById('btn-salin-siswa').onclick = () => openSalinSiswaModal();
+        const quickSetupBtn = document.getElementById('btn-quick-setup-siswa');
+        if (quickSetupBtn) quickSetupBtn.onclick = () => openQuickSetupKelasModal();
+
+        document.getElementById('btn-add-siswa').onclick = () => {
+          if (!state.activeKelasId) {
+            openQuickSetupKelasModal(() => openSiswaModal());
+            return;
+          }
+          openSiswaModal();
+        };
+        document.getElementById('btn-salin-siswa').onclick = () => {
+          if (!state.activeKelasId) {
+            openQuickSetupKelasModal();
+            return;
+          }
+          if (!siswaList.length) {
+            showToast('Belum ada siswa di kelas ini untuk disalin. Tambahkan siswa terlebih dahulu.', true);
+            return;
+          }
+          openSalinSiswaModal();
+        };
         document.getElementById('btn-template-siswa').onclick = () => downloadTemplateSiswaExcel(kls);
-        document.getElementById('btn-import-excel').onclick = () => document.getElementById('excel-file-input').click();
+        document.getElementById('btn-import-excel').onclick = () => {
+          if (!state.activeKelasId) {
+            openQuickSetupKelasModal(() => {
+              showToast('Kelas siap! Silakan klik "Import Excel" sekali lagi untuk memilih file.');
+            });
+            return;
+          }
+          document.getElementById('excel-file-input').click();
+        };
         document.getElementById('excel-file-input').onchange = handleImportExcelSiswa;
 
         panel.querySelectorAll('[data-edit-sis]').forEach(b => {
@@ -2054,7 +2087,14 @@
         });
       } else if (state.kelolaTab === 'import_tx') {
         if (!tp || !kls) {
-          panel.innerHTML = `<div class="glass-card empty-state"><h3>Pilih Tahun Pelajaran &amp; Kelas Terlebih Dahulu</h3><p>Buat Tahun Pelajaran dan Kelas sebelum mengimpor data tabungan.</p></div>`;
+          panel.innerHTML = `
+            <div class="glass-card empty-state">
+              <div style="font-size:32px;">📥</div>
+              <h3>Pilih Tahun Pelajaran &amp; Kelas Terlebih Dahulu</h3>
+              <p>Buat Tahun Pelajaran dan Kelas pertama Anda sebelum mengimpor data tabungan.</p>
+              <button class="btn btn-primary btn-sm" id="btn-setup-from-import">⚡ Buat Tahun Pelajaran &amp; Kelas</button>
+            </div>`;
+          document.getElementById('btn-setup-from-import').onclick = () => openQuickSetupKelasModal();
           return;
         }
         const bSel = BULAN_TP[state.importMonthIdx] || BULAN_TP[0];
@@ -2196,14 +2236,14 @@
           <div class="glass-card">
             <div class="card-header">
               <div>
-                <div class="card-title">Daftar Kelas — TP ${escapeHtml(tp?.nama || '-')}</div>
+                <div class="card-title">Daftar Kelas — TP ${escapeHtml(tp?.nama || 'Belum ada TP')}</div>
                 <div style="font-size:12px; color:var(--text-muted);">Anda bisa membuat banyak kelas dalam satu Tahun Pelajaran</div>
               </div>
-              <button class="btn btn-primary btn-sm" id="btn-add-kelas" ${!tp ? 'disabled' : ''}>+ Tambah Kelas</button>
+              <button class="btn btn-primary btn-sm" id="btn-add-kelas">+ Tambah Kelas</button>
             </div>
             <div class="card-body" style="padding:0;">
               ${kelasDiTp.length === 0 ? `
-                <div class="empty-state"><h3>Belum Ada Kelas</h3><p>Tambahkan kelas pertama pada Tahun Pelajaran ini.</p></div>
+                <div class="empty-state"><h3>Belum Ada Kelas</h3><p>Klik "+ Tambah Kelas" di atas untuk membuat kelas pertama Anda.</p></div>
               ` : `
                 <div class="table-wrap" style="border:none; border-radius:0;">
                   <table class="data-table">
@@ -2234,7 +2274,13 @@
             </div>
           </div>
         `;
-        document.getElementById('btn-add-kelas').onclick = () => openKelasModal();
+        document.getElementById('btn-add-kelas').onclick = () => {
+          if (!state.activeTpId) {
+            openQuickSetupKelasModal();
+            return;
+          }
+          openKelasModal();
+        };
         panel.querySelectorAll('[data-edit-kls]').forEach(b => {
           b.onclick = () => openKelasModal(state.kelas.find(k => k.id === b.dataset.editKls));
         });
@@ -2334,14 +2380,20 @@
                 <strong>iPhone / iPad (Safari):</strong> Ketuk ikon <strong>Bagikan (Share)</strong> di bagian bawah → pilih <strong>"Tambah ke Layar Utama (Add to Home Screen)"</strong>.
               </div>
             </div>
-            <button id="btn-install-pwa-main" class="btn btn-primary" ${deferredPrompt ? '' : 'disabled'}>
-              ${deferredPrompt ? '📲 Install Aplikasi Sekarang' : '✓ Gunakan Menu Browser untuk Install'}
+            <button id="btn-install-pwa-main" class="btn btn-primary">
+              ${deferredPrompt ? '📲 Install Aplikasi Sekarang' : '📲 Panduan / Install via Browser'}
             </button>
           </div>
         `;
         const installBtn = document.getElementById('btn-install-pwa-main');
-        if (installBtn && deferredPrompt) {
-          installBtn.onclick = triggerInstallPWA;
+        if (installBtn) {
+          installBtn.onclick = () => {
+            if (deferredPrompt) {
+              triggerInstallPWA();
+            } else {
+              showToast('Klik ikon Install di address bar Chrome atau menu browser (⋮ / Share) → Tambah ke Layar Utama.');
+            }
+          };
         }
       }
     }
@@ -2780,6 +2832,92 @@
           closeModal();
           await loadAllData();
         } catch (err) { showToast(err.message, true); }
+      };
+    }
+
+    // Modal Setup Cepat: otomatis muncul jika user klik Tambah/Impor Siswa saat TP atau Kelas belum dibuat
+    function openQuickSetupKelasModal(onDone = null) {
+      const hasTp = !!state.activeTpId;
+      const defYear = new Date().getFullYear();
+      const activeTp = getActiveTp();
+
+      openModal({
+        title: hasTp ? 'Buat Kelas Aktif Terlebih Dahulu' : 'Setup Cepat Tahun Pelajaran & Kelas',
+        bodyHtml: `
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+            ${hasTp
+              ? `Belum ada kelas pada <strong>TP ${escapeHtml(activeTp?.nama || '')}</strong>. Lengkapi data kelas di bawah untuk mulai mencatat/impor siswa.`
+              : 'Database masih kosong. Buat Tahun Pelajaran & Kelas pertama Anda dalam 1 langkah cepat:'}
+          </p>
+          ${!hasTp ? `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" class="form-group">
+              <div>
+                <label class="field-label">Tahun Mulai</label>
+                <input id="qs-tp-mulai" type="number" min="2020" max="2099" class="input" value="${defYear}" />
+              </div>
+              <div>
+                <label class="field-label">Label TP</label>
+                <input id="qs-tp-nama" type="text" class="input" value="${defYear}/${defYear + 1}" />
+              </div>
+            </div>
+          ` : ''}
+          <div class="form-group">
+            <label class="field-label">Nama Kelas</label>
+            <input id="qs-kls-nama" type="text" class="input" placeholder="Contoh: KELAS V (LIMA)" />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Nama Sekolah (Opsional)</label>
+            <input id="qs-kls-sekolah" type="text" class="input" placeholder="Contoh: SDN Gedongboyountung" />
+          </div>
+          <div class="form-group">
+            <label class="field-label">Nama Wali Kelas (Opsional)</label>
+            <input id="qs-kls-wali" type="text" class="input" placeholder="Contoh: Ibu Siti Aminah, S.Pd" />
+          </div>
+        `,
+        footHtml: `
+          <button type="button" class="btn btn-outline" id="qs-cancel">Batal</button>
+          <button type="button" class="btn btn-primary" id="qs-save">Simpan &amp; Aktifkan</button>
+        `
+      });
+
+      const mulaiEl = document.getElementById('qs-tp-mulai');
+      if (mulaiEl) {
+        mulaiEl.oninput = (e) => {
+          const y = Number(e.target.value);
+          if (y >= 2000) document.getElementById('qs-tp-nama').value = `${y}/${y + 1}`;
+        };
+      }
+      document.getElementById('qs-cancel').onclick = closeModal;
+      document.getElementById('qs-save').onclick = async () => {
+        const nama_kelas = document.getElementById('qs-kls-nama').value.trim();
+        const nama_sekolah = document.getElementById('qs-kls-sekolah').value.trim();
+        const wali_kelas = document.getElementById('qs-kls-wali').value.trim();
+        if (!nama_kelas) { showToast('Nama kelas wajib diisi', true); return; }
+
+        const btn = document.getElementById('qs-save');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
+        try {
+          let tpId = state.activeTpId;
+          if (!tpId) {
+            const tahun_mulai = Number(document.getElementById('qs-tp-mulai').value);
+            const nama = document.getElementById('qs-tp-nama').value.trim();
+            if (!tahun_mulai || !nama) throw new Error('Tahun Pelajaran wajib diisi');
+            const insTp = await dbInsert('tahun_pelajaran', { tahun_mulai, nama, is_aktif: true });
+            tpId = insTp?.[0]?.id;
+            state.activeTpId = tpId;
+          }
+          const insKls = await dbInsert('kelas', { tahun_pelajaran_id: tpId, nama_kelas, nama_sekolah, wali_kelas });
+          if (insKls?.[0]?.id) state.activeKelasId = insKls[0].id;
+          closeModal();
+          showToast('Tahun Pelajaran & Kelas berhasil dibuat!');
+          await loadAllData();
+          if (typeof onDone === 'function') onDone();
+        } catch (err) {
+          showToast(err.message || 'Gagal menyimpan setup awal', true);
+          btn.disabled = false;
+          btn.textContent = 'Simpan & Aktifkan';
+        }
       };
     }
 
