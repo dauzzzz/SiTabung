@@ -591,6 +591,10 @@
       border: 1px solid var(--border-glass);
       background: rgba(255, 255, 255, 0.9);
     }
+    .table-wrap.matrix-wrap {
+      max-height: calc(100vh - 255px);
+      overflow: auto;
+    }
     table.data-table {
       width: 100%;
       border-collapse: collapse;
@@ -622,8 +626,8 @@
       min-width: 100%;
     }
     table.matrix-table th, table.matrix-table td {
-      border-right: 1px solid rgba(22, 163, 74, 0.12);
-      border-bottom: 1px solid rgba(22, 163, 74, 0.12);
+      border-right: 1px solid rgba(22, 163, 74, 0.14);
+      border-bottom: 1px solid rgba(22, 163, 74, 0.14);
       padding: 7px 8px;
       text-align: center;
       white-space: nowrap;
@@ -634,24 +638,41 @@
       font-weight: 700;
       position: sticky;
       top: 0;
-      z-index: 3;
+      z-index: 4;
+      box-shadow: 0 2px 4px rgba(15, 41, 26, 0.12);
     }
     table.matrix-table .sticky-no {
-      position: sticky; left: 0; z-index: 2;
-      background: #fff; width: 42px; min-width: 42px;
+      position: sticky; left: 0; z-index: 3;
+      background: #ffffff; width: 42px; min-width: 42px;
     }
     table.matrix-table .sticky-name {
-      position: sticky; left: 42px; z-index: 2;
-      background: #fff; text-align: left;
+      position: sticky; left: 42px; z-index: 3;
+      background: #ffffff; text-align: left;
       min-width: 185px; max-width: 220px;
       font-weight: 700; color: var(--text-main);
-      box-shadow: 3px 0 6px -3px rgba(15, 41, 26, 0.1);
+      box-shadow: 3px 0 6px -3px rgba(15, 41, 26, 0.12);
     }
     table.matrix-table thead .sticky-no,
     table.matrix-table thead .sticky-name {
       background: var(--leaf-800);
       color: #fff;
-      z-index: 5;
+      z-index: 7;
+    }
+    /* Warna baris selang-seling ke samping (Zebra Striping) */
+    table.matrix-table tbody tr:nth-child(odd) td,
+    table.matrix-table tbody tr:nth-child(odd) .sticky-no,
+    table.matrix-table tbody tr:nth-child(odd) .sticky-name {
+      background-color: #ffffff;
+    }
+    table.matrix-table tbody tr:nth-child(even) td,
+    table.matrix-table tbody tr:nth-child(even) .sticky-no,
+    table.matrix-table tbody tr:nth-child(even) .sticky-name {
+      background-color: #eefaf2;
+    }
+    table.matrix-table tbody tr:hover td,
+    table.matrix-table tbody tr:hover .sticky-no,
+    table.matrix-table tbody tr:hover .sticky-name {
+      background-color: #dcfce7;
     }
     .matrix-cell {
       cursor: pointer;
@@ -659,22 +680,27 @@
       transition: background 0.14s, transform 0.1s;
     }
     .matrix-cell:hover {
-      background: var(--leaf-100) !important;
-      outline: 2px solid var(--leaf-500);
+      background: var(--leaf-200) !important;
+      outline: 2px solid var(--leaf-600);
       outline-offset: -2px;
     }
-    .matrix-cell.filled {
-      background: rgba(220, 252, 231, 0.55);
-      color: var(--leaf-800);
+    table.matrix-table tbody tr .matrix-cell.filled {
+      background-color: rgba(187, 247, 208, 0.72);
+      color: var(--leaf-900);
       font-weight: 700;
     }
-    .matrix-cell.neg {
-      background: rgba(254, 226, 226, 0.6);
+    table.matrix-table tbody tr .matrix-cell.neg {
+      background-color: rgba(254, 226, 226, 0.72);
       color: var(--danger);
       font-weight: 700;
     }
+    table.matrix-table tbody tr:nth-child(odd) .matrix-total-col {
+      background-color: #f4fbf6;
+    }
+    table.matrix-table tbody tr:nth-child(even) .matrix-total-col {
+      background-color: #e2f5e8;
+    }
     .matrix-total-col {
-      background: var(--leaf-50);
       font-weight: 800;
       color: var(--leaf-900);
       text-align: right !important;
@@ -684,6 +710,13 @@
       background: var(--leaf-100) !important;
       font-weight: 800;
       color: var(--leaf-900);
+      position: sticky;
+      bottom: 0;
+      z-index: 3;
+    }
+    .matrix-foot .sticky-no,
+    .matrix-foot .sticky-name {
+      z-index: 6;
     }
 
     /* Student Cards Grid */
@@ -1139,6 +1172,7 @@
       .m-card-list { grid-template-columns: 1fr; }
       .swipe-hint { display: block; }
       .table-wrap { -webkit-overflow-scrolling: touch; }
+      .table-wrap.matrix-wrap { max-height: calc(100vh - 285px); }
       table.matrix-table { font-size: 11px; }
       table.matrix-table th, table.matrix-table td { padding: 6px 5px; }
       table.matrix-table .sticky-no { width: 28px; min-width: 28px; padding: 6px 3px; }
@@ -1788,6 +1822,13 @@ NOTIFY pgrst, 'reload schema';`;
     let backgroundPollTimer = null;
     let isLoadingData = false;
     let lastDataSignature = '';
+    let lastUserScrollAt = 0;
+
+    document.addEventListener('scroll', (e) => {
+      if (e.target && e.target.classList && (e.target.classList.contains('table-wrap') || e.target.id === 'main-content')) {
+        lastUserScrollAt = Date.now();
+      }
+    }, true);
 
     function setSyncStatus(label, color = 'var(--leaf-500)') {
       const txtEl = document.getElementById('sync-status-txt');
@@ -1837,20 +1878,15 @@ NOTIFY pgrst, 'reload schema';`;
         });
 
       backgroundPollTimer = setInterval(() => {
-        if (document.visibilityState === 'visible' && state.user && !modalEl.classList.contains('open')) {
+        const recentlyScrolled = Date.now() - lastUserScrollAt < 5000;
+        if (document.visibilityState === 'visible' && state.user && !modalEl.classList.contains('open') && !recentlyScrolled) {
           loadAllData({ silent: true });
         }
-      }, 12000);
+      }, 15000);
     }
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && state.user && !IS_PREVIEW) {
-        loadAllData({ silent: true });
-      }
-    });
-
-    window.addEventListener('focus', () => {
-      if (state.user && !IS_PREVIEW) {
         loadAllData({ silent: true });
       }
     });
@@ -1890,10 +1926,10 @@ NOTIFY pgrst, 'reload schema';`;
           state.bukuTablesReady = true;
         } else {
           const [tpRes, klsRes, sisRes, txRes] = await Promise.all([
-            supabase.from('tahun_pelajaran').select('*').order('tahun_mulai', { ascending: false }),
-            supabase.from('kelas').select('*').order('nama_kelas', { ascending: true }),
-            supabase.from('siswa').select('*').order('no_urut', { ascending: true }),
-            supabase.from('transaksi_tabungan').select('*').order('tanggal', { ascending: false })
+            supabase.from('tahun_pelajaran').select('*').order('tahun_mulai', { ascending: false }).order('id', { ascending: true }),
+            supabase.from('kelas').select('*').order('nama_kelas', { ascending: true }).order('id', { ascending: true }),
+            supabase.from('siswa').select('*').order('no_urut', { ascending: true }).order('id', { ascending: true }),
+            supabase.from('transaksi_tabungan').select('*').order('tanggal', { ascending: false }).order('id', { ascending: true })
           ]);
           if (tpRes.error) throw tpRes.error;
           if (klsRes.error) throw klsRes.error;
@@ -1907,9 +1943,9 @@ NOTIFY pgrst, 'reload schema';`;
 
           // Muat tabel Buku Siswa secara terpisah agar tidak memblokir tabungan jika tabel belum dibuat
           const [bmRes, tgRes, pbRes] = await Promise.all([
-            supabase.from('buku_mapel').select('*').order('created_at', { ascending: true }),
-            supabase.from('tagihan_buku').select('*'),
-            supabase.from('pembayaran_buku').select('*').order('tanggal', { ascending: false })
+            supabase.from('buku_mapel').select('*').order('created_at', { ascending: true }).order('id', { ascending: true }),
+            supabase.from('tagihan_buku').select('*').order('id', { ascending: true }),
+            supabase.from('pembayaran_buku').select('*').order('tanggal', { ascending: false }).order('id', { ascending: true })
           ]);
           if (bmRes.error || tgRes.error || pbRes.error) {
             state.bukuTablesReady = false;
@@ -1933,14 +1969,15 @@ NOTIFY pgrst, 'reload schema';`;
           state.activeKelasId = kelasInTp[0] ? kelasInTp[0].id : null;
         }
 
+        const sortById = (arr) => [...arr].sort((a, b) => String(a.id).localeCompare(String(b.id)));
         const newSignature = JSON.stringify({
-          tp: state.tahunPelajaran,
-          kls: state.kelas,
-          sis: state.siswa,
-          tx: state.transaksi,
-          bm: state.bukuMapel,
-          tg: state.tagihanBuku,
-          pb: state.pembayaranBuku,
+          tp: sortById(state.tahunPelajaran),
+          kls: sortById(state.kelas),
+          sis: sortById(state.siswa),
+          tx: sortById(state.transaksi),
+          bm: sortById(state.bukuMapel),
+          tg: sortById(state.tagihanBuku),
+          pb: sortById(state.pembayaranBuku),
           bReady: state.bukuTablesReady
         });
         const hasChanged = newSignature !== lastDataSignature;
@@ -2062,16 +2099,20 @@ NOTIFY pgrst, 'reload schema';`;
       else if (state.view === 'kelola') renderKelola(container);
 
       if (preserveScroll) {
-        container.scrollTop = prevMainScrollTop;
-        const nextTableWrap = container.querySelector('.table-wrap');
-        if (nextTableWrap) {
-          nextTableWrap.scrollLeft = prevTableScrollLeft;
-          nextTableWrap.scrollTop = prevTableScrollTop;
-        }
-        const nextDayBar = container.querySelector('.m-day-filter-bar');
-        if (nextDayBar) {
-          nextDayBar.scrollLeft = prevDayBarScrollLeft;
-        }
+        const restorePositions = () => {
+          container.scrollTop = prevMainScrollTop;
+          const nextTableWrap = container.querySelector('.table-wrap');
+          if (nextTableWrap) {
+            nextTableWrap.scrollLeft = prevTableScrollLeft;
+            nextTableWrap.scrollTop = prevTableScrollTop;
+          }
+          const nextDayBar = container.querySelector('.m-day-filter-bar');
+          if (nextDayBar) {
+            nextDayBar.scrollLeft = prevDayBarScrollLeft;
+          }
+        };
+        restorePositions();
+        requestAnimationFrame(restorePositions);
       }
 
       if (focusedId) {
@@ -2634,7 +2675,7 @@ NOTIFY pgrst, 'reload schema';`;
           ` : `
             <!-- MODE TABEL MATRIKS 1-31 -->
             <div class="swipe-hint no-print">👉 Geser tabel ke kiri/kanan untuk melihat tanggal 1–31 &amp; kolom Jumlah</div>
-            <div class="table-wrap">
+            <div class="table-wrap matrix-wrap">
               <table class="matrix-table" id="matrix-bulanan-table">
                 <thead>
                   <tr>
@@ -3018,7 +3059,7 @@ NOTIFY pgrst, 'reload schema';`;
           ` : `
             <!-- MODE TABEL MATRIKS TAHUNAN -->
             <div class="swipe-hint no-print">👉 Geser tabel ke kiri/kanan untuk melihat bulan Juli – Juni</div>
-            <div class="table-wrap">
+            <div class="table-wrap matrix-wrap">
               <table class="matrix-table">
                 <thead>
                   <tr>
